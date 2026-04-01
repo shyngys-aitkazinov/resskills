@@ -2,15 +2,40 @@
 
 Virtual AI research team for Claude Code. 21 skills that turn a solo AI/CS researcher into a team of PI, Research Scientist, ML Engineer, Analyst, Reviewer, and Technical Writer.
 
-## Quick Start
+## Installation
+
+### Via pip / uv (recommended)
 
 ```bash
-# Install
-git clone <repo> ~/.claude/skills/resskills
+pip install git+https://github.com/shyngys-aitkazinov/resskills.git
+# or
+uv pip install git+https://github.com/shyngys-aitkazinov/resskills.git
+```
+
+This installs two CLI commands: `resskills-gen` and `resskills-config`.
+
+### As Claude Code skills pack
+
+```bash
+git clone https://github.com/shyngys-aitkazinov/resskills.git ~/.claude/skills/resskills
 cd ~/.claude/skills/resskills
 uv sync
 uv run resskills-gen
+```
 
+### Development
+
+```bash
+git clone https://github.com/shyngys-aitkazinov/resskills.git
+cd resskills
+uv sync
+uv run resskills-gen        # Generate SKILL.md files from templates
+uv run resskills-config get primary_metric  # Read config
+```
+
+## Quick Start
+
+```bash
 # Initialize a research project
 cd ~/my-research-project
 # Then in Claude Code:
