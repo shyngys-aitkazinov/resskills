@@ -1,0 +1,153 @@
+---
+name: second-opinion
+version: 0.1.0
+description: |
+  Cross-model independent verification. Launches a fresh Agent subagent with
+  minimal context to independently evaluate code, methodology, claims, or
+  results. Reports agreements, disagreements, and new issues found.
+  Use when asked for "second opinion", "independent review", "sanity check",
+  or "verify this".
+allowed-tools:
+  - Bash
+  - Read
+  - Agent
+  - Grep
+  - Glob
+---
+
+{{ PREAMBLE }}
+
+# /second-opinion -- Independent Verification via Fresh Perspective
+
+You are an External Critic. Your job is to get a genuinely independent
+evaluation of code, methodology, claims, or results by launching a fresh
+Agent subagent that has NO access to the current session's reasoning or
+assumptions. This defeats confirmation bias.
+
+---
+
+## When to Use
+
+- The user asks for a "second opinion" or "sanity check"
+- A critical decision point: architecture choice, metric interpretation, paper claim
+- Something feels off but you can't pinpoint why
+- Before submitting or publishing results
+
+---
+
+## Procedure
+
+### Step 1: Identify the Review Target
+
+Determine what needs independent review. Classify it:
+
+| Category | What to send to the subagent |
+|----------|------------------------------|
+| **Code** | The specific file(s) and a neutral description of intent |
+| **Methodology** | The experimental setup, metrics, and evaluation approach |
+| **Claims** | The specific claim and the evidence supporting it |
+| **Results** | Raw numbers, how they were produced, and what's concluded |
+
+Ask the user to clarify the target if it is ambiguous.
+
+### Step 2: Prepare Minimal Context
+
+This is the critical step. You must strip away accumulated session bias.
+
+1. **Read** only the specific files relevant to the review target.
+2. **Compose a neutral brief** -- a self-contained description that includes:
+   - What the code/method/claim is
+   - What it is supposed to achieve
+   - The raw evidence (code, numbers, logs)
+3. **DO NOT include**:
+   - Your own assessment or opinion
+   - The conversation history or prior reasoning
+   - Leading questions that hint at expected answers
+   - Justifications for why things were done a certain way
+
+### Step 3: Launch the Subagent
+
+Use the Agent tool to spawn a fresh subagent. The subagent prompt must follow
+this template:
+
+```
+You are an independent reviewer. You have no prior context about this project.
+Evaluate the following with fresh eyes.
+
+[CATEGORY]: [brief neutral description]
+
+[Relevant code/data/claims inserted here]
+
+Your task:
+1. List every problem, weakness, or concern you find. Be specific.
+2. Rate each issue: CRITICAL (must fix), IMPORTANT (should fix), MINOR (nice to fix).
+3. Note anything that looks correct and well-done.
+4. State your overall confidence in the code/method/claim: HIGH, MEDIUM, or LOW.
+5. If you had to bet, what is the most likely failure mode?
+```
+
+Give the subagent access to Read, Bash, Grep, and Glob so it can inspect files
+independently if needed.
+
+### Step 4: Compare Findings
+
+Once the subagent returns, compare its findings against the current session's
+assumptions and prior analysis.
+
+Build three lists:
+
+- **Agreements** -- Issues both perspectives identified. These are high-confidence
+  findings. Mark them clearly.
+- **Disagreements** -- Things the subagent flagged that the session dismissed, or
+  things the session assumed were fine that the subagent questions. These need
+  investigation.
+- **New Issues** -- Problems the subagent found that were never considered in the
+  current session. These are the most valuable -- they reveal blind spots.
+
+### Step 5: Report
+
+Present the findings to the user in this format:
+
+```
+SECOND OPINION REPORT
+=====================
+Target: [what was reviewed]
+Category: [code | methodology | claims | results]
+Subagent confidence: [HIGH | MEDIUM | LOW]
+
+AGREEMENTS (high confidence):
+  - [issue]: [details]
+  - ...
+
+DISAGREEMENTS (investigate further):
+  - [issue]: Session assumed X, but subagent found Y
+  - ...
+
+NEW ISSUES (blind spots):
+  - [issue]: [details]
+  - ...
+
+RECOMMENDATION: [proceed | revise | block until resolved]
+```
+
+---
+
+## Rules
+
+- **Never prime the subagent.** The whole value is independence. If you leak your
+  current opinion, you get an echo, not a second opinion.
+- **Keep the subagent context small.** Send only what is needed. Large contexts
+  dilute focus and waste tokens.
+- **One review target per invocation.** If the user wants multiple things reviewed,
+  run separate subagent calls for each.
+- **Trust disagreements.** When the subagent disagrees with the session, default
+  to investigating further rather than dismissing. The subagent has fresh eyes;
+  the session has accumulated assumptions.
+- **Be honest about agreements too.** If both perspectives agree something is
+  fine, say so -- that is useful signal.
+
+---
+
+{{ COMPLETION_PROTOCOL }}
+
+{{ LEARNINGS_EPILOGUE }}

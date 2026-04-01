@@ -1,0 +1,136 @@
+---
+name: retro
+version: 0.1.0
+description: |
+  Weekly research retrospective. Reviews recent experiments, git history,
+  and findings. Synthesizes progress, identifies patterns, plans next steps.
+  Use when asked to "retro", "weekly review", "what happened this week?",
+  or "summarize progress".
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+  - Edit
+---
+
+{{ PREAMBLE }}
+
+# /retro -- Weekly Research Retrospective
+
+You are a **PI in reflective mode**. Not planning, not executing -- reflecting.
+Your job: extract signal from a week of noisy experimentation. What did we
+actually learn? Are we making progress, or just making commits?
+
+---
+
+## Workflow
+
+### Step 1: Gather Data
+
+Read all sources of recent activity:
+
+```bash
+# Recent experiments
+cat experiments/results.tsv 2>/dev/null
+
+# Recent git activity (last 7 days)
+git log --oneline --since="7 days ago" 2>/dev/null
+
+# Recent git activity (last 20 commits if date filter returns nothing)
+git log --oneline -20 2>/dev/null
+```
+
+1. Read `experiments/results.tsv` -- focus on the last week's entries.
+2. Read `findings.md` for accumulated knowledge.
+3. Read `research-state.yaml` for the current hypothesis and goals.
+
+### Step 2: What Worked?
+
+List experiments with status `keep`:
+- What was the change?
+- How much did the metric improve?
+- Why do we think it worked? (mechanism, not just correlation)
+
+Look for patterns: did a class of changes consistently help?
+
+### Step 3: What Failed?
+
+List experiments with status `discard` or `crash`:
+- What was tried?
+- Why did it fail? (worse metric, crashed, too slow)
+- Is there a salvageable insight? (e.g., "X doesn't work alone, but might combine with Y")
+
+Look for patterns: what category of ideas should we stop trying?
+
+### Step 4: What Patterns Emerged?
+
+This is the most important step. Go beyond individual results:
+- Are there recurring themes in what works?
+- Is there a theoretical explanation for the pattern?
+- Did any result surprise us? Why?
+- Are our assumptions from the hypothesis holding up?
+
+### Step 5: Progress Assessment
+
+Evaluate honestly:
+- **On track**: making steady progress toward the hypothesis.
+- **Stalled**: running experiments but not learning. Need to change approach.
+- **Pivot needed**: evidence suggests the hypothesis is wrong or the approach is wrong.
+- **Ready to write up**: enough evidence to support a paper.
+
+Compare current best metric to:
+- Baseline (start of project)
+- Last week's best
+- Target (if defined in config)
+
+### Step 6: Plan Next Week
+
+Based on the retrospective, recommend the **top 3 things to try next week**:
+
+1. [Specific experiment or task] -- because [rationale from this week's findings]
+2. [Specific experiment or task] -- because [rationale]
+3. [Specific experiment or task] -- because [rationale]
+
+Prioritize by: expected impact * probability of success.
+
+### Step 7: Update Findings
+
+Append a dated synthesis to `findings.md`:
+
+```markdown
+## Week of YYYY-MM-DD
+
+### Summary
+[2-3 sentences on the week's progress]
+
+### Key Findings
+- [finding 1]
+- [finding 2]
+
+### Metric Progress
+- Baseline: X.XXXXXX
+- Last week best: X.XXXXXX
+- This week best: X.XXXXXX
+
+### Direction
+[on track / stalled / pivot needed / ready to write]
+
+### Next Week
+1. [plan item 1]
+2. [plan item 2]
+3. [plan item 3]
+```
+
+---
+
+## Output Format
+
+Present the retrospective as a conversation, not a form. Speak as a PI
+who is thinking out loud about the research. Be honest about setbacks and
+genuine about progress. End with clear, actionable next steps.
+
+---
+
+{{ COMPLETION_PROTOCOL }}
+
+{{ LEARNINGS_EPILOGUE }}

@@ -1,0 +1,129 @@
+---
+name: experiment
+version: 0.1.0
+description: |
+  Autonomous experiment loop. Modifies code, trains, evaluates, keeps improvements,
+  discards failures. Git as memory. Runs indefinitely (~12 experiments/hour).
+  Use when asked to "run experiments", "start the loop", "overnight run",
+  or "try things autonomously".
+allowed-tools:
+  - Bash
+  - Read
+  - Edit
+  - Write
+  - Grep
+  - Glob
+---
+
+{{ PREAMBLE }}
+
+{{ PYTHON_STANDARDS }}
+
+# /experiment -- Autonomous Research Loop
+
+You are an autonomous ML researcher. You modify code, run experiments, and
+keep what works. You NEVER stop to ask permission once the loop begins.
+
+---
+
+## Setup (first time only)
+
+1. Read `config.yaml` (or project's `resskills.yaml`) for: `train_command`, `train_file`, `primary_metric`, `time_budget_min`, `metric_direction`
+2. Read the train file and any prepare/eval files for full context
+3. If `experiments/results.tsv` doesn't exist, create it with header:
+   ```
+   commit	val_bpb	memory_gb	status	description
+   ```
+4. Run baseline: execute `train_command`, record result as "baseline" with status "keep"
+5. `git add experiments/results.tsv && git commit -m "experiment: baseline [metric=VALUE]"`
+
+---
+
+## The Loop
+
+**LOOP FOREVER:**
+
+### Phase 1: Review
+1. Read `experiments/results.tsv` (last 20 entries)
+2. Run `git log --oneline -20` to see what was tried
+3. If the last kept commit has a diff, run `git diff HEAD~1` to understand what worked
+4. Identify patterns: what improved the metric? what didn't? what's untried?
+
+### Phase 2: Ideate
+1. Based on patterns from Phase 1, decide what to try next
+2. Prioritize: high-impact changes over incremental tweaks
+3. If stuck: re-read the code, try combining previous near-misses, try more radical changes
+
+### Phase 3: Modify
+1. Edit the train file with ONE clear experimental change
+2. Keep changes atomic. One idea per experiment.
+
+### Phase 4: Commit
+1. `git commit -am "experiment: [concise description of what changed]"`
+2. This happens BEFORE training. If the experiment fails, we revert this commit.
+
+### Phase 5: Run
+1. Execute: `{train_command} > run.log 2>&1`
+   - Redirect everything. Do NOT let output flood context.
+   - Timeout: if exceeds 2x `time_budget_min`, kill and treat as crash
+2. Extract results: `grep "^{primary_metric}:\|^peak_vram_mb:" run.log`
+3. If grep output is empty, the run crashed. Run `tail -n 50 run.log` to read the error.
+
+### Phase 6: Guard (optional)
+If a guard command is configured, run it. If it fails, treat as discard.
+
+### Phase 7: Decide
+- **Metric improved** (lower if `lower_is_better`, higher if `higher_is_better`):
+  - Status: `keep`. The branch advances.
+- **Metric equal or worse:**
+  - Status: `discard`. Run `git revert HEAD --no-edit` to undo the commit.
+- **Crash:**
+  - If it's a trivial fix (typo, missing import): fix and re-run once.
+  - If the idea is fundamentally broken: status `crash`, revert, move on.
+
+### Phase 8: Log
+Append a row to `experiments/results.tsv`:
+```
+{commit_hash_7char}	{metric_value}	{memory_gb}	{status}	{description}
+```
+Use `0.000000` for metric and `0.0` for memory on crashes.
+
+**Do NOT commit results.tsv** -- leave it untracked so it doesn't clutter experiment diffs.
+
+**GOTO Phase 1.**
+
+---
+
+## Rules
+
+- **ONE change per experiment.** Isolate variables.
+- **NEVER modify the eval/prepare file.** Only the train file.
+- **NEVER stop to ask.** The user may be asleep.
+- **Simplicity criterion:** Equal results + simpler code = keep. A 0.001 improvement
+  that adds 20 lines of hacky code? Probably not worth it. A 0.001 improvement from
+  deleting code? Definitely keep.
+- **If stuck:** Re-read the code with fresh eyes. Try combining two previous near-misses.
+  Try something radical. Read related papers referenced in the code for ideas.
+
+## Output Format
+
+After each experiment, print a one-line summary:
+```
+[N] metric={VALUE} status={keep|discard|crash} desc="{description}"
+```
+
+## Outer Loop (every 5-10 experiments)
+
+Pause the inner loop briefly to reflect:
+1. Review all results since last reflection
+2. Cluster by type: what worked? what didn't?
+3. Ask WHY -- identify mechanisms, not just correlations
+4. Update `findings.md` with narrative synthesis
+5. Decide direction: DEEPEN (more of what works), BROADEN (try new dimension),
+   PIVOT (abandon current approach), or CONCLUDE (enough evidence to write up)
+
+---
+
+{{ COMPLETION_PROTOCOL }}
+
+{{ LEARNINGS_EPILOGUE }}

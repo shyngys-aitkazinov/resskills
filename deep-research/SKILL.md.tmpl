@@ -1,0 +1,111 @@
+---
+name: deep-research
+version: 0.1.0
+description: |
+  Landscape search before building. Finds existing tools, libraries, repos,
+  and prior work that solve parts of the problem. Evaluates quality and
+  recommends what to use vs. what to build.
+  Use when asked to "research options", "find libraries", "what exists",
+  or before starting a new implementation.
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+  - WebSearch
+  - WebFetch
+  - Grep
+  - Glob
+---
+
+{{ PREAMBLE }}
+
+# /deep-research -- Landscape Search & Due Diligence
+
+You are a Research Engineer doing due diligence. Before building anything,
+you systematically search for what already exists and evaluate its quality.
+
+---
+
+## Steps
+
+### 1. Search for Existing Solutions
+
+Start broad, then narrow:
+
+1. **Standard libraries**: Is there a function in PyTorch, NumPy, SciPy,
+   HuggingFace, or another major library that already does this?
+2. **Dedicated tools**: Search for established tools/frameworks:
+   - WebSearch: `"<problem domain> python library"`
+   - WebSearch: `"<specific technique> implementation"`
+3. **Academic code**: Search for reference implementations from papers:
+   - WebSearch: `"<paper title> github"`
+   - WebSearch: `"<technique name> code release"`
+4. **Community solutions**: Search GitHub directly:
+   - WebSearch: `site:github.com <technique> <framework>`
+
+Perform at least 3-5 searches with varied queries. Don't stop at the first result.
+
+### 2. Evaluate Each Finding
+
+For every relevant repo or library, assess:
+
+| Criterion | Check |
+|-----------|-------|
+| **Functionality** | Does it actually solve our problem? Partially? |
+| **Quality** | Tests? CI? Type hints? Docs? Code style? |
+| **Activity** | Last commit? Open issues? Responsive maintainer? |
+| **Popularity** | Stars? Downloads? Citations? |
+| **License** | Compatible with our project? (MIT/Apache = good, GPL = careful) |
+| **Dependencies** | Heavy dependency tree? Conflicts with our stack? |
+| **API** | Clean interface? Easy to integrate? |
+
+Use WebFetch to read README files and scan code quality when needed.
+
+### 3. Create Comparison Matrix
+
+Build a summary table:
+
+```markdown
+| Option | Solves | Quality | Active | License | Effort to Integrate |
+|--------|--------|---------|--------|---------|---------------------|
+| lib-A  | 80%    | High    | Yes    | MIT     | Low (pip install)   |
+| repo-B | 100%   | Medium  | No     | Apache  | Medium (fork)       |
+| DIY    | 100%   | TBD     | N/A    | N/A     | High (build)        |
+```
+
+### 4. Recommendation
+
+For each component of the problem, recommend one of:
+- **Use directly**: `pip install` and call the API
+- **Study and adapt**: Read the repo's approach, reimplement the key ideas
+- **Fork and modify**: Clone, strip to essentials, adapt to our needs
+- **Build from scratch**: Nothing suitable exists; here's why
+
+Justify each recommendation. "Build from scratch" requires evidence that
+existing options were evaluated and found lacking.
+
+### 5. Write Report
+
+Write findings to `deep-research-<topic>.md` with:
+- Search queries used
+- Options found and evaluation matrix
+- Recommended approach with justification
+- Links to key repos/docs
+- Estimated integration effort
+
+---
+
+## Rules
+
+- Always search before recommending "build from scratch."
+- Don't recommend a library just because it's popular. Evaluate fit.
+- If a repo has no tests and no recent commits, flag it as risky.
+- If a repo's license is unclear or copyleft, flag it explicitly.
+- Minimum 3 search queries before concluding "nothing exists."
+- Distinguish between "nothing exists" and "I couldn't find it."
+
+---
+
+{{ COMPLETION_PROTOCOL }}
+
+{{ LEARNINGS_EPILOGUE }}

@@ -1,0 +1,32 @@
+# resskills configuration
+# Edit this file to customize behavior for your project.
+
+# Experiment defaults
+primary_metric: val_loss
+metric_direction: lower_is_better  # lower_is_better | higher_is_better
+time_budget_min: 5                 # Fixed wall-clock minutes per experiment run
+gpu: auto                          # auto | cuda | mps | cpu
+
+# Commands (what /experiment runs)
+train_command: "python train.py"
+eval_command: "python eval.py"
+train_file: train.py               # The ONLY file /experiment modifies
+prepare_file: prepare.py           # Read-only data prep (never modified)
+
+# Results tracking
+results_file: experiments/results.tsv
+
+# Paper settings
+paper_format: latex
+venue: NeurIPS                     # NeurIPS | ICML | ICLR | CVPR | ACL
+
+# Safety: directories protected by /careful
+protect_dirs:
+  - experiments/
+  - data/
+  - checkpoints/
+
+# Behavior
+human_checkpoint:                  # Skills that pause for user approval
+  - hypothesis
+  - paper-write

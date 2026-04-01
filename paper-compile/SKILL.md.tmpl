@@ -1,0 +1,142 @@
+---
+name: paper-compile
+version: 0.1.0
+description: |
+  Compile LaTeX paper to PDF. Fixes common errors, checks page limits,
+  verifies figure references, runs pre-submission checklist. Use when asked
+  to "compile the paper", "build PDF", "fix LaTeX errors", or "prepare submission".
+allowed-tools:
+  - Bash
+  - Read
+  - Edit
+  - Write
+---
+
+{{ PREAMBLE }}
+
+# /paper-compile -- LaTeX Compilation & Submission Prep
+
+You are a LaTeX build engineer. Your job: get the paper from source to a
+compliant, submission-ready PDF with zero warnings.
+
+---
+
+## Workflow
+
+### Step 1: Check Prerequisites
+
+```bash
+# Verify tools are available
+which latexmk pdflatex bibtex 2>/dev/null
+which xelatex biber 2>/dev/null  # optional
+latexmk --version 2>/dev/null | head -1
+```
+
+If latexmk is missing, try `tlmgr install latexmk` or report BLOCKED.
+
+### Step 2: Find the Main File
+
+1. Look for `main.tex`, `paper.tex`, or a `.tex` file with `\documentclass`.
+2. Identify the bibliography backend: `\bibliography{}` (bibtex) or `\addbibresource{}` (biber).
+3. Read `config.yaml` for venue-specific settings.
+
+### Step 3: Compile
+
+```bash
+# Full compilation with latexmk (handles multiple passes)
+cd paper/ && latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex 2>&1 | tail -50
+```
+
+If compilation fails, proceed to Step 4. If it succeeds, skip to Step 5.
+
+### Step 4: Fix Common Errors
+
+Handle these automatically:
+
+| Error | Fix |
+|-------|-----|
+| `! LaTeX Error: File 'X.sty' not found` | `tlmgr install X` or suggest `\usepackage` removal |
+| `Undefined control sequence` | Check for typos, missing packages |
+| `Missing $ inserted` | Find unescaped underscore or math-mode issue |
+| `Citation 'X' undefined` | Check .bib file, rerun bibtex/biber |
+| `Reference 'X' undefined` | Rerun latexmk (usually resolves) |
+| `Overfull \hbox` | Adjust text or add `\sloppy` locally |
+| `I couldn't open file` | Check path, case sensitivity |
+
+After fixing, recompile. Repeat up to 3 times. If still failing, escalate.
+
+### Step 5: Verify Output
+
+```bash
+# Check PDF was produced
+ls -la main.pdf 2>/dev/null
+
+# Count pages
+if command -v pdfinfo &>/dev/null; then
+  pdfinfo main.pdf | grep Pages
+fi
+```
+
+{{ VENUE_FORMATS }}
+
+### Step 6: Check Figure References
+
+```bash
+# Find all \includegraphics references
+grep -rn '\\includegraphics' *.tex sections/*.tex 2>/dev/null
+
+# Find all figure files
+find . -name "*.pdf" -o -name "*.png" -o -name "*.eps" | grep -v main.pdf
+
+# Check for unreferenced figures or missing files
+grep -rn '\\label{fig:' *.tex sections/*.tex 2>/dev/null
+grep -rn '\\ref{fig:' *.tex sections/*.tex 2>/dev/null
+```
+
+Report any figures that are included but never referenced, or referenced but missing.
+
+### Step 7: Pre-Submission Checklist
+
+Check each item and report status:
+
+- [ ] **Page limit**: within venue limit?
+- [ ] **Anonymization**: no author names in body (for double-blind venues)?
+      ```bash
+      grep -rn 'TODO\|FIXME\|XXX\|our lab\|our university' *.tex sections/*.tex
+      ```
+- [ ] **Abstract length**: within venue limit?
+- [ ] **References format**: consistent style, no broken entries?
+- [ ] **All figures readable**: no tiny text, sufficient resolution?
+- [ ] **Supplementary**: if required, is it prepared?
+- [ ] **No compilation warnings**: clean build log?
+
+---
+
+## Output Format
+
+```
+## Compilation Report
+
+- **Status**: SUCCESS | FAILED
+- **PDF**: path/to/output.pdf
+- **Pages**: N (limit: M for venue)
+- **Warnings**: N (list if any)
+
+### Pre-Submission Checklist
+| Item           | Status | Notes |
+|----------------|--------|-------|
+| Page limit     | PASS   |       |
+| Anonymization  | PASS   |       |
+| References     | WARN   | 2 missing entries |
+| Figures        | PASS   |       |
+| Clean build    | PASS   |       |
+
+### Issues Found
+[list any issues and fixes applied]
+```
+
+---
+
+{{ COMPLETION_PROTOCOL }}
+
+{{ LEARNINGS_EPILOGUE }}

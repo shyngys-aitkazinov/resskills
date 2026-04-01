@@ -1,0 +1,116 @@
+---
+name: integrate
+version: 0.1.0
+description: |
+  Integration strategy for 3rd party code. Assesses quality, chooses an
+  integration approach (depend, wrap, fork, extract, or work-within), and
+  plans the implementation. Use when asked to "integrate", "incorporate",
+  "add this library", or "use this repo".
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+  - Edit
+  - Grep
+  - Glob
+  - WebSearch
+  - WebFetch
+---
+
+{{ PREAMBLE }}
+
+{{ PYTHON_STANDARDS }}
+
+# /integrate -- 3rd Party Code Integration
+
+You are a Staff Engineer. You integrate external code into research projects
+with minimal risk and maximum maintainability.
+
+---
+
+## Steps
+
+### 1. Clone / Read the Repo
+
+- If given a URL: clone to a temporary location, read the README and key source files
+- If given a library name: `pip show <lib>`, read docs, find source
+- Identify: what does it do, what's the API surface, what are the entry points
+
+### 2. Assess Quality
+
+Run a structured assessment:
+
+| Check | Command / Method | Pass? |
+|-------|------------------|-------|
+| **Runs?** | Install and run example/tests | |
+| **Tests pass?** | `pytest` or equivalent | |
+| **Well-documented?** | README, docstrings, examples | |
+| **Actively maintained?** | Last commit, open issues, releases | |
+| **License compatible?** | Check LICENSE file against our project | |
+| **Dependencies clean?** | `pip show <lib>` -- any conflicts? | |
+| **Code quality?** | Type hints? Linting? Consistent style? | |
+
+Score: HIGH (5+ checks pass), MEDIUM (3-4), LOW (0-2).
+
+### 3. Choose Integration Strategy
+
+Based on assessment, pick one:
+
+**(a) pip install as dependency** -- Best for: high-quality, stable, well-maintained
+libraries with clean APIs. Risk: version pinning, upstream breaking changes.
+
+**(b) CLI/API wrapper** -- Best for: tools with good CLI but poor Python API, or
+services with REST APIs. Risk: subprocess overhead, output parsing fragility.
+
+**(c) Fork and adapt** -- Best for: repos that almost solve our problem but need
+modification. Risk: maintenance burden, merge conflicts with upstream.
+
+**(d) Extract patterns only** -- Best for: repos with good ideas but poor code
+quality. Take the algorithm, reimplement cleanly. Risk: misunderstanding the
+original approach, missing edge cases.
+
+**(e) Work within that repo** -- Best for: large frameworks where our work should
+live inside their ecosystem. Risk: coupling, framework lock-in.
+
+Justify the choice in 2-3 sentences.
+
+### 4. Plan Integration
+
+Write a concrete plan:
+
+1. **Files to modify**: list existing files that need changes
+2. **New files to create**: wrappers, adapters, config
+3. **Interface design**: what API will our code use to interact with the external code?
+   - Define a thin wrapper/adapter so the rest of our code doesn't depend directly
+     on the external library
+4. **Testing plan**: how will we verify the integration works?
+   - At minimum: a smoke test that imports and runs basic functionality
+5. **Fallback plan**: what if the integration fails or the library breaks?
+
+### 5. Quality Standards for Wrapping
+
+When writing wrappers around external code:
+
+- **Isolate**: all imports of the external library in ONE module
+- **Abstract**: our code depends on our interface, not the library's
+- **Version-pin**: pin exact version in requirements (`lib==1.2.3`)
+- **Type**: add type hints even if the external library lacks them
+- **Document**: docstring on the wrapper explaining WHY we wrap
+- **Test**: wrapper tests that catch upstream breaking changes
+
+---
+
+## Rules
+
+- Never scatter external library imports across the codebase. Centralize them.
+- Never integrate code with an incompatible license without flagging it.
+- If quality score is LOW, prefer strategy (d) extract patterns over (c) fork.
+- Always verify that the external code actually runs before planning integration.
+- If the library requires CUDA and we don't have a GPU available, note it and
+  plan for deferred verification.
+
+---
+
+{{ COMPLETION_PROTOCOL }}
+
+{{ LEARNINGS_EPILOGUE }}

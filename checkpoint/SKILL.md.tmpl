@@ -1,0 +1,104 @@
+---
+name: checkpoint
+version: 0.1.0
+description: |
+  Save or resume research state. Snapshots the current hypothesis, results,
+  open questions, and git state to a timestamped JSON file. On resume, reads
+  the latest checkpoint and reconstructs context.
+  Use when asked to "save progress", "checkpoint", "resume", or "where was I".
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+  - Glob
+  - Grep
+---
+
+{{ PREAMBLE }}
+
+# /checkpoint -- Save & Resume Research State
+
+You are a research session manager. You serialize the current state of a
+research project so future sessions can pick up exactly where they left off.
+
+---
+
+## Save Mode (default)
+
+When the user says "checkpoint", "save state", or "save progress":
+
+1. **Gather state** by reading:
+   - `research-state.yaml` (current hypothesis, goals)
+   - `experiments/results.tsv` (experiment count, best result, last status)
+   - `findings.md` (key discoveries so far)
+   - `git log --oneline -10` (recent commits)
+   - `git status --short` (uncommitted work)
+   - `git branch --show-current` (active branch)
+
+2. **Compose checkpoint JSON** with this schema:
+   ```json
+   {
+     "timestamp": "YYYY-MM-DDTHH:MM:SSZ",
+     "project": "<project slug>",
+     "branch": "<current branch>",
+     "hypothesis": "<current working hypothesis>",
+     "experiment_count": <N>,
+     "best_result": {"metric": "<name>", "value": <number>, "commit": "<hash>"},
+     "last_status": "<keep|discard|crash>",
+     "next_steps": ["<planned action 1>", "<planned action 2>"],
+     "open_questions": ["<question 1>", "<question 2>"],
+     "blockers": ["<blocker if any>"],
+     "uncommitted_files": ["<file list>"],
+     "git_head": "<full SHA>"
+   }
+   ```
+
+3. **Write** to `experiments/checkpoints/YYYY-MM-DD.json`.
+   - Create `experiments/checkpoints/` if it doesn't exist.
+   - If a checkpoint already exists for today, append a counter: `YYYY-MM-DD_2.json`.
+
+4. **Confirm** by printing a summary of what was saved.
+
+---
+
+## Resume Mode
+
+When the user says "resume", "where was I", or "load checkpoint":
+
+1. **Find latest checkpoint**: glob `experiments/checkpoints/*.json`, sort by name, take last.
+2. **Read and parse** the JSON.
+3. **Print a context briefing**:
+   ```
+   PROJECT: <slug> (branch: <branch>)
+   LAST SESSION: <timestamp>
+   HYPOTHESIS: <hypothesis>
+   PROGRESS: <N> experiments, best <metric>=<value>
+   NEXT STEPS:
+     1. <step>
+     2. <step>
+   OPEN QUESTIONS:
+     - <question>
+   BLOCKERS:
+     - <blocker>
+   ```
+4. **Verify git state**: compare `git_head` with current HEAD. If they differ, warn
+   that commits have been made since the checkpoint.
+5. **Check for uncommitted work** listed in the checkpoint. If those files still have
+   changes, note it. If they've been committed, note that too.
+
+---
+
+## Rules
+
+- Never modify experiment results or research state during checkpoint. Read-only except
+  for writing the checkpoint file itself.
+- If `experiments/results.tsv` doesn't exist, record experiment_count as 0.
+- If `research-state.yaml` doesn't exist, set hypothesis to "not yet defined".
+- Keep checkpoint files small. No large data blobs.
+- Always use UTC timestamps.
+
+---
+
+{{ COMPLETION_PROTOCOL }}
+
+{{ LEARNINGS_EPILOGUE }}

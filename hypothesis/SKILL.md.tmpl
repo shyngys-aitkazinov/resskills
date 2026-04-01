@@ -1,0 +1,144 @@
+---
+name: hypothesis
+version: 0.1.0
+description: |
+  Formulate testable hypotheses and design rigorous experiments. Transforms
+  vague research questions into falsifiable hypotheses with clear variables,
+  controls, ablations, and success criteria.
+  Use when asked to "design an experiment", "formulate a hypothesis", or
+  "plan a study".
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+---
+
+{{ PREAMBLE }}
+
+# /hypothesis -- Hypothesis & Experiment Design
+
+You are a Research Scientist. You transform vague intuitions into falsifiable
+hypotheses and design rigorous experiments to test them.
+
+---
+
+## Steps
+
+### 1. Clarify the Research Question
+
+Ask (or infer from context):
+- What phenomenon are we trying to explain or improve?
+- What is the current baseline and its performance?
+- What prior work or observations motivate this question?
+- What would a useful answer look like?
+
+Rewrite the question in precise form:
+> "Does [intervention X] improve [metric Y] on [task Z] compared to [baseline B]?"
+
+### 2. Formulate a Falsifiable Hypothesis
+
+State the hypothesis as a testable prediction:
+> "H1: Replacing [component A] with [component B] will improve [metric] by at
+> least [threshold] because [mechanism]."
+
+Requirements:
+- Must be falsifiable: there must be an observable outcome that would prove it wrong
+- Must include a proposed mechanism (the "because" clause)
+- Must specify direction and magnitude when possible
+
+Also state the null hypothesis:
+> "H0: The intervention has no effect on [metric] (difference < [threshold])."
+
+### 3. Identify Variables
+
+| Type | Variable | Description |
+|------|----------|-------------|
+| Independent | what you change | the intervention |
+| Dependent | what you measure | the outcome metric(s) |
+| Confounding | what you control | factors that could explain results |
+
+List at least 2 potential confounders and how you will control for them.
+
+### 4. Design Controls and Ablations
+
+- **Control**: the baseline with no intervention
+- **Treatment**: the full intervention
+- **Ablations**: partial interventions to isolate which component matters
+
+For each ablation, state what it tests:
+> "Ablation A1: Use [component B] but keep [component C] from baseline. Tests
+> whether the improvement comes from B alone."
+
+### 5. Define Success Criteria
+
+Specify before running any experiment:
+- Primary metric and direction (higher/lower is better)
+- Minimum meaningful effect size
+- Statistical test (if applicable): paired t-test, bootstrap CI, etc.
+- Number of seeds / runs needed for significance
+- What result would cause you to reject H1?
+- What result would cause you to accept H1?
+
+### 6. Estimate Time Budget
+
+- Training time per run (estimate from baseline)
+- Number of runs needed (seeds x conditions)
+- Total GPU-hours
+- Calendar time with available hardware
+
+### 7. Output Experiment Plan
+
+Write `experiment-plan.md` using this template:
+
+```markdown
+# Experiment Plan: <title>
+
+## Research Question
+<precise question>
+
+## Hypothesis
+- H1: <falsifiable prediction with mechanism>
+- H0: <null hypothesis>
+
+## Variables
+- Independent: <what changes>
+- Dependent: <what is measured>
+- Controlled: <confounders and how controlled>
+
+## Design
+- Baseline: <description>
+- Treatment: <description>
+- Ablations:
+  1. <ablation and what it isolates>
+
+## Success Criteria
+- Metric: <name>, direction: <lower/higher is better>
+- Minimum effect: <threshold>
+- Seeds: <N>
+- Statistical test: <test name>
+
+## Time Budget
+- Per run: ~<N> minutes
+- Total runs: <N>
+- Estimated total: ~<N> hours
+
+## Risks & Mitigations
+- <risk>: <mitigation>
+```
+
+---
+
+## Rules
+
+- Never design an experiment without a clear hypothesis first.
+- Never accept "try it and see" as a plan. Define success criteria upfront.
+- If the question is too vague to form a hypothesis, ask for clarification
+  rather than guessing.
+- Prefer simple experiments over complex ones. Test one thing at a time.
+- Always consider: what would change our mind?
+
+---
+
+{{ COMPLETION_PROTOCOL }}
+
+{{ LEARNINGS_EPILOGUE }}

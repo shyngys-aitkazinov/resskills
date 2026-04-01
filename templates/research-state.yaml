@@ -1,0 +1,26 @@
+# Research State -- machine-readable checkpoint
+# Updated by /checkpoint, read by preamble at session start
+
+project: unknown
+branch: unknown
+timestamp: ""
+
+# Current research focus
+hypothesis: ""
+hypothesis_status: pending  # pending | testing | confirmed | refuted
+
+# Experiment progress
+experiment_count: 0
+best_metric: null
+best_commit: ""
+last_experiment_status: ""  # keep | discard | crash
+
+# Direction
+iteration_phase: bootstrap  # bootstrap | inner_loop | outer_loop | writing
+next_planned_experiment: ""
+
+# Open questions
+open_questions: []
+
+# Next steps (ordered by priority)
+next_steps: []

@@ -1,0 +1,247 @@
+<!-- AUTO-GENERATED from SKILL.md.tmpl -- do not edit directly -->
+<!-- Regenerate: uv run python scripts/gen_skills.py -->
+
+---
+name: second-opinion
+version: 0.1.0
+description: |
+  Cross-model independent verification. Launches a fresh Agent subagent with
+  minimal context to independently evaluate code, methodology, claims, or
+  results. Reports agreements, disagreements, and new issues found.
+  Use when asked for "second opinion", "independent review", "sanity check",
+  or "verify this".
+allowed-tools:
+  - Bash
+  - Read
+  - Agent
+  - Grep
+  - Glob
+---
+
+## Preamble (run first)
+
+```bash
+_BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
+echo "BRANCH: $_BRANCH | PROJECT: $_SLUG"
+
+# Experiment state
+if [ -f experiments/results.tsv ]; then
+  _EXP_COUNT=$(tail -n +2 experiments/results.tsv 2>/dev/null | wc -l | tr -d ' ')
+  _BEST=$(tail -n +2 experiments/results.tsv 2>/dev/null | grep "keep" | sort -t$'\t' -k2 -n | head -1 | cut -f2)
+  _LAST_STATUS=$(tail -1 experiments/results.tsv 2>/dev/null | cut -f4)
+  echo "EXPERIMENTS: $_EXP_COUNT runs | BEST: ${_BEST:-none} | LAST: ${_LAST_STATUS:-none}"
+else
+  echo "EXPERIMENTS: 0 runs"
+fi
+
+# Research state
+if [ -f research-state.yaml ]; then
+  echo "--- RESEARCH STATE ---"
+  head -10 research-state.yaml 2>/dev/null
+  echo "--- END STATE ---"
+fi
+
+# Findings summary
+if [ -f findings.md ]; then
+  _FINDINGS_LINES=$(wc -l < findings.md 2>/dev/null | tr -d ' ')
+  echo "FINDINGS: ${_FINDINGS_LINES} lines"
+fi
+
+# Learnings
+_LEARN_DIR="${HOME}/.resskills/projects/${_SLUG}"
+_LEARN_FILE="${_LEARN_DIR}/learnings.jsonl"
+if [ -f "$_LEARN_FILE" ]; then
+  _LEARN_COUNT=$(wc -l < "$_LEARN_FILE" 2>/dev/null | tr -d ' ')
+  echo "LEARNINGS: $_LEARN_COUNT entries"
+  if [ "$_LEARN_COUNT" -gt 3 ] 2>/dev/null; then
+    echo "--- RECENT LEARNINGS ---"
+    tail -3 "$_LEARN_FILE" 2>/dev/null
+    echo "--- END LEARNINGS ---"
+  fi
+else
+  echo "LEARNINGS: 0"
+fi
+```
+
+
+# /second-opinion -- Independent Verification via Fresh Perspective
+
+You are an External Critic. Your job is to get a genuinely independent
+evaluation of code, methodology, claims, or results by launching a fresh
+Agent subagent that has NO access to the current session's reasoning or
+assumptions. This defeats confirmation bias.
+
+---
+
+## When to Use
+
+- The user asks for a "second opinion" or "sanity check"
+- A critical decision point: architecture choice, metric interpretation, paper claim
+- Something feels off but you can't pinpoint why
+- Before submitting or publishing results
+
+---
+
+## Procedure
+
+### Step 1: Identify the Review Target
+
+Determine what needs independent review. Classify it:
+
+| Category | What to send to the subagent |
+|----------|------------------------------|
+| **Code** | The specific file(s) and a neutral description of intent |
+| **Methodology** | The experimental setup, metrics, and evaluation approach |
+| **Claims** | The specific claim and the evidence supporting it |
+| **Results** | Raw numbers, how they were produced, and what's concluded |
+
+Ask the user to clarify the target if it is ambiguous.
+
+### Step 2: Prepare Minimal Context
+
+This is the critical step. You must strip away accumulated session bias.
+
+1. **Read** only the specific files relevant to the review target.
+2. **Compose a neutral brief** -- a self-contained description that includes:
+   - What the code/method/claim is
+   - What it is supposed to achieve
+   - The raw evidence (code, numbers, logs)
+3. **DO NOT include**:
+   - Your own assessment or opinion
+   - The conversation history or prior reasoning
+   - Leading questions that hint at expected answers
+   - Justifications for why things were done a certain way
+
+### Step 3: Launch the Subagent
+
+Use the Agent tool to spawn a fresh subagent. The subagent prompt must follow
+this template:
+
+```
+You are an independent reviewer. You have no prior context about this project.
+Evaluate the following with fresh eyes.
+
+[CATEGORY]: [brief neutral description]
+
+[Relevant code/data/claims inserted here]
+
+Your task:
+1. List every problem, weakness, or concern you find. Be specific.
+2. Rate each issue: CRITICAL (must fix), IMPORTANT (should fix), MINOR (nice to fix).
+3. Note anything that looks correct and well-done.
+4. State your overall confidence in the code/method/claim: HIGH, MEDIUM, or LOW.
+5. If you had to bet, what is the most likely failure mode?
+```
+
+Give the subagent access to Read, Bash, Grep, and Glob so it can inspect files
+independently if needed.
+
+### Step 4: Compare Findings
+
+Once the subagent returns, compare its findings against the current session's
+assumptions and prior analysis.
+
+Build three lists:
+
+- **Agreements** -- Issues both perspectives identified. These are high-confidence
+  findings. Mark them clearly.
+- **Disagreements** -- Things the subagent flagged that the session dismissed, or
+  things the session assumed were fine that the subagent questions. These need
+  investigation.
+- **New Issues** -- Problems the subagent found that were never considered in the
+  current session. These are the most valuable -- they reveal blind spots.
+
+### Step 5: Report
+
+Present the findings to the user in this format:
+
+```
+SECOND OPINION REPORT
+=====================
+Target: [what was reviewed]
+Category: [code | methodology | claims | results]
+Subagent confidence: [HIGH | MEDIUM | LOW]
+
+AGREEMENTS (high confidence):
+  - [issue]: [details]
+  - ...
+
+DISAGREEMENTS (investigate further):
+  - [issue]: Session assumed X, but subagent found Y
+  - ...
+
+NEW ISSUES (blind spots):
+  - [issue]: [details]
+  - ...
+
+RECOMMENDATION: [proceed | revise | block until resolved]
+```
+
+---
+
+## Rules
+
+- **Never prime the subagent.** The whole value is independence. If you leak your
+  current opinion, you get an echo, not a second opinion.
+- **Keep the subagent context small.** Send only what is needed. Large contexts
+  dilute focus and waste tokens.
+- **One review target per invocation.** If the user wants multiple things reviewed,
+  run separate subagent calls for each.
+- **Trust disagreements.** When the subagent disagrees with the session, default
+  to investigating further rather than dismissing. The subagent has fresh eyes;
+  the session has accumulated assumptions.
+- **Be honest about agreements too.** If both perspectives agree something is
+  fine, say so -- that is useful signal.
+
+---
+
+## Completion Status
+
+When completing this skill's workflow, report status using one of:
+
+- **DONE** -- All steps completed successfully. Evidence provided for each claim.
+- **DONE_WITH_CONCERNS** -- Completed, but with issues you should know about. List each concern.
+- **BLOCKED** -- Cannot proceed. State what is blocking and what was tried.
+- **NEEDS_CONTEXT** -- Missing information required to continue. State exactly what you need.
+
+### Escalation
+
+It is always OK to stop and say "this is too hard for me" or "I'm not confident in this result."
+
+Bad work is worse than no work. You will not be penalized for escalating.
+- If you have attempted a task 3 times without success, STOP and escalate.
+- If you are uncertain about a result that affects downstream decisions, STOP and escalate.
+- If the scope exceeds what you can verify, STOP and escalate.
+
+Escalation format:
+```
+STATUS: BLOCKED | NEEDS_CONTEXT
+REASON: [1-2 sentences]
+ATTEMPTED: [what you tried]
+RECOMMENDATION: [what the user should do next]
+```
+
+
+## Operational Self-Improvement
+
+Before completing, reflect on this session:
+- Did any commands fail unexpectedly?
+- Did you take a wrong approach and have to backtrack?
+- Did you discover a project-specific quirk (data format, GPU config, library version)?
+- Did something take longer than expected because of a missing config or convention?
+
+If yes, log an operational learning for future sessions. Only log genuine discoveries
+that would save 5+ minutes in a future session. Don't log obvious things or transient errors.
+
+```bash
+_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
+_LEARN_DIR="${HOME}/.resskills/projects/${_SLUG}"
+mkdir -p "$_LEARN_DIR"
+echo '{"ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","skill":"{{SKILL_NAME}}","type":"TYPE","content":"DESCRIPTION","confidence":"high"}' >> "$_LEARN_DIR/learnings.jsonl"
+```
+
+Replace TYPE with one of: `technique` (what works), `pitfall` (what breaks),
+`insight` (what we discovered), `convention` (project patterns).
+Replace DESCRIPTION with a one-sentence summary.
+
