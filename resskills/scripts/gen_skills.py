@@ -119,7 +119,7 @@ def render_template(
 
     header = (
         "<!-- AUTO-GENERATED from SKILL.md.tmpl -- do not edit directly -->\n"
-        "<!-- Regenerate: uv run python scripts/gen_skills.py -->\n\n"
+        "<!-- Regenerate: uv run resskills-gen -->\n\n"
     )
     return header + rendered
 

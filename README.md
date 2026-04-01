@@ -9,7 +9,7 @@ Virtual AI research team for Claude Code. 21 skills that turn a solo AI/CS resea
 git clone <repo> ~/.claude/skills/resskills
 cd ~/.claude/skills/resskills
 uv sync
-uv run python scripts/gen_skills.py
+uv run resskills-gen
 
 # Initialize a research project
 cd ~/my-research-project
@@ -109,7 +109,7 @@ venue: NeurIPS                    # Paper formatting target
 ```bash
 mkdir my-skill/
 # Create SKILL.md.tmpl with {{ PREAMBLE }} + your content + {{ COMPLETION_PROTOCOL }}
-uv run python scripts/gen_skills.py
+uv run resskills-gen
 # Done!
 ```
 
@@ -150,7 +150,7 @@ resskills uses a template system inspired by [gstack](https://github.com/garryta
 
 - Each skill has a `SKILL.md.tmpl` (source of truth) and a generated `SKILL.md`
 - Shared blocks in `blocks/` are injected via Jinja2 (`{{ BLOCK_NAME }}`)
-- `uv run python scripts/gen_skills.py` regenerates all skills from templates
+- `uv run resskills-gen` regenerates all skills from templates
 - Change a block once, regenerate, and all 21 skills update
 
 ### Template System
@@ -161,7 +161,7 @@ blocks/*.md           (shared prose + instructions)
        v
 SKILL.md.tmpl         (human-written per-skill content + {{ placeholders }})
        |
-       v  [uv run python scripts/gen_skills.py]
+       v  [uv run resskills-gen]
 SKILL.md              (generated, committed, what Claude Code reads)
 ```
 

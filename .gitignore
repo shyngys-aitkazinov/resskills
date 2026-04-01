@@ -5,8 +5,6 @@ __pycache__/
 .venv/
 
 # IDE
-.idea/
-.vscode/
 *.swp
 *.swo
 

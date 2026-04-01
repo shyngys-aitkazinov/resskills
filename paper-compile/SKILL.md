@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED from SKILL.md.tmpl -- do not edit directly -->
-<!-- Regenerate: uv run python scripts/gen_skills.py -->
+<!-- Regenerate: uv run resskills-gen -->
 
 ---
 name: paper-compile
