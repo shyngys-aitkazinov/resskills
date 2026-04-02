@@ -92,7 +92,7 @@ def fetch_rows(
 ### Formatting (Guide section 3.2, 3.4)
 
 Handled by `ruff format`. Key points:
-- Line length: 88 characters (configured in pyproject.toml).
+- Line length: 120 characters (configured in pyproject.toml).
 - 4-space indentation, never tabs.
 - No backslash line continuation. Use implicit joining in parens/brackets.
 - Two blank lines between top-level definitions, one between methods.
