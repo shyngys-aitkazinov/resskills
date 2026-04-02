@@ -74,9 +74,11 @@ Three reasons:
 
 Config is loaded in the preamble at skill startup. Search order (first found wins):
 
-1. `resskills.yaml` in project root (project-local override)
+1. `resskills.yaml` in project root (project-local)
 2. `~/.resskills/config.yaml` (global user config)
-3. `config.yaml` in the skills pack (pack defaults)
+
+There is no pack default. If no config exists, skills infer from context or ask.
+See `config.example.yaml` for available options.
 
 ### Config variables
 

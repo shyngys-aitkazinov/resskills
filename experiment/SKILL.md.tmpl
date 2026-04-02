@@ -30,14 +30,17 @@ keep what works. You NEVER stop to ask permission once the loop begins.
 
 ## Setup (first time only)
 
-1. Read `config.yaml` (or project's `resskills.yaml`) for: `train_command`, `train_file`, `primary_metric`, `time_budget_min`, `metric_direction`
-2. Read the train file and any prepare/eval files for full context
-3. If `experiments/results.tsv` doesn't exist, create it with header:
+1. Understand the project: read config if it exists (`resskills.yaml` or `config.yaml`),
+   otherwise look at the codebase to figure out what to run, what metric to track, and
+   what file to modify. If ambiguous, ask the user.
+2. Read the train file and any prepare/eval files for full context.
+3. If `experiments/results.tsv` doesn't exist, create it with a header row.
+   The columns should match the project's actual metrics. Example:
    ```
-   commit	val_bpb	memory_gb	status	description
+   commit	metric_value	memory_gb	status	description
    ```
-4. Run baseline: execute `train_command`, record result as "baseline" with status "keep"
-5. `git add experiments/results.tsv && git commit -m "experiment: baseline [metric=VALUE]"`
+4. Run baseline: execute the training command, record result as "baseline" with status "keep".
+5. Commit: `git add experiments/results.tsv && git commit -m "experiment: baseline [metric=VALUE]"`
 
 ---
 

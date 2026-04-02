@@ -138,18 +138,25 @@ cd ~/my-research-project
 /analyze --> /review --> /second-opinion
 ```
 
-## Configuration
+## Configuration (optional)
 
-Edit `config.yaml` in the skills root:
+Skills work without any config. They infer from context or ask when needed.
 
-```yaml
-primary_metric: val_loss          # What /experiment optimizes
-metric_direction: lower_is_better
-time_budget_min: 5                # Fixed time per experiment
-train_command: "python train.py"
-train_file: train.py
-venue: NeurIPS                    # Paper formatting target
+If you want explicit config, copy the example to your project:
+
+```bash
+cp ~/.claude/skills/resskills/config.example.yaml resskills.yaml
+# Edit resskills.yaml for your project
 ```
+
+Or set global defaults:
+
+```bash
+mkdir -p ~/.resskills
+cp ~/.claude/skills/resskills/config.example.yaml ~/.resskills/config.yaml
+```
+
+See `config.example.yaml` for all available options.
 
 ## Creating New Skills
 

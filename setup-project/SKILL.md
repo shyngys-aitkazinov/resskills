@@ -3,12 +3,12 @@
 
 ---
 name: setup-project
-version: 0.1.0
+version: 0.2.0
 description: |
   Research project scaffolder mode. Creates standard directory layout (experiments,
-  data, paper, figures), experiment tracker TSV, ML-tailored .gitignore, config.yaml,
-  research-state.yaml, findings.md, uv virtual environment with dependency install,
-  and git init with initial commit. Never overwrites existing files.
+  data, paper, figures), .gitignore, research-state.yaml, findings.md, and uv virtual
+  environment. Asks the user what they're building before creating config. Never
+  overwrites existing files.
   Use when: "set up", "initialize", "scaffold", "new project", "setup project". (resskills)
 allowed-tools:
   - Bash
@@ -49,138 +49,149 @@ Do not assume defaults -- understand the situation and act accordingly.
 
 # /setup-project -- Initialize Research Project
 
-You are a research project scaffolder. You create the standard directory layout,
-tracking files, and Python environment so the researcher can start immediately.
+You are a research project scaffolder. You create directory layout, tracking files,
+and Python environment so the researcher can start immediately.
 
 ---
 
-## Steps
+## Step 0: Understand the project
 
-### 1. Create Directory Structure
+Before creating anything, understand what the user is building. Ask if not obvious:
+- What kind of project? (ML training, library, data analysis, paper, general research)
+- This determines which files to create. Not every project needs a results.tsv or train.py.
 
+## Step 1: Create Directory Structure
+
+Always create:
 ```
-experiments/
-experiments/checkpoints/
 data/
-paper/
 figures/
 ```
 
-Create each with `mkdir -p`. Do not overwrite existing directories.
-
-### 2. Create Experiment Tracker
-
-Write `experiments/results.tsv` with the header line:
+Only create if the project involves experiments:
 ```
-commit	val_bpb	memory_gb	status	description
+experiments/
+experiments/checkpoints/
 ```
+
+Only create if the project involves paper writing:
+```
+paper/
+```
+
+Use `mkdir -p`. Do not overwrite existing directories.
+
+## Step 2: Create Experiment Tracker (only if relevant)
+
+If the project involves running experiments, create `experiments/results.tsv` with
+a header row. Ask the user what metrics to track, or infer from context. Example:
+
+```
+commit	metric	status	description
+```
+
+The columns should match what the project actually measures. Do not hardcode `val_bpb`
+or any specific metric name.
+
 Only create if it doesn't already exist.
 
-### 3. Create .gitignore
+## Step 3: Create .gitignore
 
-Write a `.gitignore` tailored for ML research projects:
+Write a `.gitignore` tailored for the project type. Start with Python basics:
 ```
-# Data
-data/raw/
-*.h5
-*.hdf5
-*.tfrecord
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.DS_Store
+*.swp
+```
 
-# Checkpoints & models
+Add ML-specific patterns only if the project involves model training:
+```
 *.pt
 *.pth
 *.ckpt
 *.safetensors
 checkpoints/
-
-# Logs
 wandb/
 runs/
 *.log
-run.log
-
-# Python
-__pycache__/
-*.pyc
-.venv/
-*.egg-info/
-
-# System
-.DS_Store
-*.swp
 ```
+
+Add data patterns only if relevant:
+```
+data/raw/
+*.h5
+*.hdf5
+*.tfrecord
+```
+
 Merge with existing `.gitignore` if one exists (append missing lines).
 
-### 4. Copy Config
+## Step 4: Create Config (only if the user wants one)
 
-If `config.yaml` does not exist, create a minimal one:
-```yaml
-train_command: "python train.py"
-train_file: "train.py"
-primary_metric: "val_loss"
-metric_direction: "lower_is_better"
-time_budget_min: 10
-```
-If it already exists, leave it untouched.
+Do NOT create a `resskills.yaml` by default. Only create one if:
+- The user asks for it
+- The project clearly needs experiment configuration
 
-### 5. Create research-state.yaml
+If creating one, ask the user what values to set. Do not fill in defaults silently.
+
+## Step 5: Create research-state.yaml
 
 ```yaml
 project: "<project name from directory>"
 created: "<YYYY-MM-DD>"
 status: "active"
-hypothesis: "TBD"
-research_question: "TBD"
 notes: ""
 ```
+
 Only create if it doesn't already exist.
 
-### 6. Create findings.md
+## Step 6: Create findings.md
 
 ```markdown
 # Findings
 
 ## Summary
 
-_No findings yet. Run experiments to populate._
+_No findings yet._
 
 ## Key Results
 
 ## Open Questions
 ```
+
 Only create if it doesn't already exist.
 
-### 7. Set Up Virtual Environment
+## Step 7: Set Up Virtual Environment
 
 ```bash
 uv venv .venv
-source .venv/bin/activate
 ```
 
-If a `pyproject.toml` exists in the project root, run `uv pip install -e ".[dev]"` or
-`uv pip install -e .` (depending on whether a `dev` extra is defined).
-
-If a `requirements.txt` exists, run `uv pip install -r requirements.txt`.
-
+If `pyproject.toml` exists, run `uv sync`.
+If `requirements.txt` exists, run `uv pip install -r requirements.txt`.
 If neither exists, just create the venv.
 
-### 8. Git Init
+## Step 8: Git Init
 
-If not already a git repo, run `git init` and make an initial commit:
+If not already a git repo:
 ```bash
 git init
 git add -A
-git commit -m "chore: initialize research project"
+git commit -m "chore: initialize project"
 ```
-If already a git repo, skip this step entirely.
+
+If already a git repo, skip entirely.
 
 ---
 
 ## Rules
 
 - Never overwrite existing files. Check before writing.
-- If any step fails (e.g., `uv` not installed), warn the user and continue with
-  remaining steps. Do not abort the entire setup.
+- Adapt to the project type. Not every project is ML training.
+- If a step fails (e.g., `uv` not installed), warn and continue.
 - Print a summary at the end listing what was created and what was skipped.
 
 ---

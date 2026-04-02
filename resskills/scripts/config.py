@@ -20,7 +20,6 @@ def _config_search_paths() -> list[Path]:
     return [
         Path.cwd() / "resskills.yaml",
         Path.home() / ".resskills" / "config.yaml",
-        Path(__file__).resolve().parent.parent.parent / "config.yaml",  # pack default
     ]
 
 

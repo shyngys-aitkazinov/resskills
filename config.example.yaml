@@ -1,5 +1,7 @@
-# resskills configuration
-# Edit this file to customize behavior for your project.
+# resskills configuration EXAMPLE
+# Copy to your project root as resskills.yaml and edit for your needs.
+# Or copy to ~/.resskills/config.yaml for global defaults.
+# Skills work without any config -- this is entirely optional.
 
 # Experiment defaults
 primary_metric: val_loss
