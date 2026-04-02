@@ -8,7 +8,7 @@ Virtual AI research team for Claude Code. 21 skills that turn a solo AI/CS resea
 
 ```bash
 git clone https://github.com/shyngys-aitkazinov/resskills.git ~/.claude/skills/resskills
-~/.claude/skills/resskills/setup
+~/.claude/skills/resskills/setup.sh
 ```
 
 The setup script:
