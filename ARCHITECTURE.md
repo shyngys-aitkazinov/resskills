@@ -101,23 +101,24 @@ Config is loaded in the preamble at skill startup. Search order (first found win
 Every skill prints context at startup. Only lines with actual data appear:
 
 ```
-# Minimal (new project, no config, no experiments yet):
+# Fresh project (nothing set up yet):
 BRANCH: main | PROJECT: my-new-idea
 
-# Mid-project (has config + experiments):
+# Mid-project (user has configured + run experiments):
 BRANCH: experiment/attention | PROJECT: my-research
 CONFIG: resskills.yaml
-METRIC: val_loss (lower_is_better)
-TIME_BUDGET: 5min
-TRAIN: python train.py | FILE: train.py
-VENUE: NeurIPS
-EXPERIMENTS: 12 runs | BEST: 0.892 | LAST: keep
-FINDINGS: 45 lines
-LEARNINGS: 28 lines
+[full config contents printed]
+RESULTS: experiments/results.tsv (12 runs)
+STATE: research-state.yaml
+FINDINGS: findings.md (45 lines)
+LEARNINGS: ~/.resskills/projects/my-research/learnings.md (28 lines)
 ```
 
-If there's no config file, no experiments, no findings, no learnings -- those lines
-simply don't appear. The preamble adapts to whatever stage you're at.
+The preamble provides **context**, not instructions. No hardcoded defaults.
+Skills use judgment to decide what they need from the current project state:
+- Config exists → use its values
+- No config but context is obvious → infer and proceed
+- Ambiguous → ask the user
 
 ## Learnings system
 
