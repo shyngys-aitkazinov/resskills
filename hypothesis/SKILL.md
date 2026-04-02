@@ -25,6 +25,27 @@ _BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 _SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
 echo "BRANCH: $_BRANCH | PROJECT: $_SLUG"
 
+# Config (project-local resskills.yaml > ~/.resskills/config.yaml > pack default)
+_CFG=""
+if [ -f resskills.yaml ]; then _CFG="resskills.yaml"
+elif [ -f "${HOME}/.resskills/config.yaml" ]; then _CFG="${HOME}/.resskills/config.yaml"
+fi
+if [ -n "$_CFG" ]; then
+  echo "CONFIG: $_CFG"
+  _METRIC=$(grep "^primary_metric:" "$_CFG" 2>/dev/null | cut -d: -f2 | tr -d ' ')
+  _DIRECTION=$(grep "^metric_direction:" "$_CFG" 2>/dev/null | cut -d: -f2 | tr -d ' ')
+  _BUDGET=$(grep "^time_budget_min:" "$_CFG" 2>/dev/null | cut -d: -f2 | tr -d ' ')
+  _TRAIN_CMD=$(grep "^train_command:" "$_CFG" 2>/dev/null | sed 's/^train_command: *//')
+  _TRAIN_FILE=$(grep "^train_file:" "$_CFG" 2>/dev/null | cut -d: -f2 | tr -d ' ')
+  _VENUE=$(grep "^venue:" "$_CFG" 2>/dev/null | cut -d: -f2 | tr -d ' ')
+  echo "METRIC: ${_METRIC:-val_loss} (${_DIRECTION:-lower_is_better})"
+  echo "TIME_BUDGET: ${_BUDGET:-5}min"
+  echo "TRAIN: ${_TRAIN_CMD:-python train.py} | FILE: ${_TRAIN_FILE:-train.py}"
+  echo "VENUE: ${_VENUE:-NeurIPS}"
+else
+  echo "CONFIG: none (using defaults: val_loss, 5min, python train.py, NeurIPS)"
+fi
+
 # Experiment state
 if [ -f experiments/results.tsv ]; then
   _EXP_COUNT=$(tail -n +2 experiments/results.tsv 2>/dev/null | wc -l | tr -d ' ')
