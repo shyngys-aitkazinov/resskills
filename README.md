@@ -4,19 +4,32 @@ Virtual AI research team for Claude Code. 21 skills that turn a solo AI/CS resea
 
 ## Installation
 
-### Quick install (30 seconds)
+### Global install (all projects)
 
 ```bash
 git clone https://github.com/shyngys-aitkazinov/resskills.git ~/.claude/skills/resskills
 ~/.claude/skills/resskills/setup.sh
 ```
 
+Skills available in every Claude Code session.
+
+### Project-local install (one project only)
+
+```bash
+cd my-research-project
+/path/to/resskills/setup.sh --local
+```
+
+Creates symlinks in `.claude/skills/` inside your project. Skills only available
+when working in that directory. Add `.claude/skills/` to `.gitignore` if you don't
+want to commit the symlinks.
+
+### What setup does
+
 The setup script:
 1. Installs Python dependencies via `uv`
 2. Generates all SKILL.md files from templates
 3. Creates symlinks so Claude Code discovers each skill as a top-level `/command`
-
-After setup, you can use `/experiment`, `/review`, `/hypothesis`, etc. in any Claude Code session.
 
 ### What setup does (symlinks)
 

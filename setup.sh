@@ -1,15 +1,37 @@
 #!/usr/bin/env bash
 # resskills setup — register skills with Claude Code
+#
+# Usage:
+#   ./setup.sh           Install globally (~/.claude/skills/)
+#   ./setup.sh --local   Install for current project only (.claude/skills/)
 set -e
 
 RESSKILLS_DIR="$(cd "$(dirname "$0")" && pwd)"
-SKILLS_DIR="$(dirname "$RESSKILLS_DIR")"
 
-echo "resskills setup"
-echo "==============="
+# Parse flags
+LOCAL=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --local) LOCAL=1; shift ;;
+    *) echo "Unknown flag: $1 (use --local for project install)"; exit 1 ;;
+  esac
+done
+
+if [ "$LOCAL" -eq 1 ]; then
+  SKILLS_DIR="$(pwd)/.claude/skills"
+  mkdir -p "$SKILLS_DIR"
+  MODE="project"
+else
+  SKILLS_DIR="$HOME/.claude/skills"
+  mkdir -p "$SKILLS_DIR"
+  MODE="global"
+fi
+
+echo "resskills setup ($MODE)"
+echo "======================="
 echo ""
 echo "Skills pack: $RESSKILLS_DIR"
-echo "Skills root: $SKILLS_DIR"
+echo "Install to:  $SKILLS_DIR"
 echo ""
 
 # 1. Install Python dependencies and generate SKILL.md files
@@ -24,8 +46,15 @@ else
   echo ""
 fi
 
-# 2. Create symlinks for each skill in the parent directory
-# This makes Claude Code discover /experiment, /review, etc. as top-level commands
+# 2. Symlink the resskills directory itself
+RESSKILLS_LINK="$SKILLS_DIR/resskills"
+if [ -L "$RESSKILLS_LINK" ]; then
+  ln -snf "$RESSKILLS_DIR" "$RESSKILLS_LINK"
+elif [ ! -e "$RESSKILLS_LINK" ]; then
+  ln -snf "$RESSKILLS_DIR" "$RESSKILLS_LINK"
+fi
+
+# 3. Create symlinks for each skill
 echo ""
 echo "Creating skill symlinks..."
 
@@ -43,12 +72,10 @@ for skill in "${SKILL_DIRS[@]}"; do
   source="resskills/$skill"
 
   if [ -L "$target" ]; then
-    # Update existing symlink
     ln -snf "$source" "$target"
     ((created++))
   elif [ -e "$target" ]; then
-    # Real directory exists, don't overwrite
-    echo "  SKIP: $skill (real directory exists at $target)"
+    echo "  SKIP: $skill (already exists at $target)"
     ((skipped++))
   else
     ln -snf "$source" "$target"
@@ -57,10 +84,17 @@ for skill in "${SKILL_DIRS[@]}"; do
 done
 
 echo "  Created/updated $created symlinks"
-[ "$skipped" -gt 0 ] && echo "  Skipped $skipped (real directories exist)"
+[ "$skipped" -gt 0 ] && echo "  Skipped $skipped (already exist)"
 
 echo ""
-echo "Done! Available skills:"
+echo "Done! ($MODE install)"
+echo ""
+if [ "$LOCAL" -eq 1 ]; then
+  echo "Skills available in this project only."
+  echo "Add .claude/skills/ to .gitignore if you don't want to commit the symlinks."
+else
+  echo "Skills available in all projects."
+fi
 echo ""
 for skill in "${SKILL_DIRS[@]}"; do
   echo "  /$skill"
