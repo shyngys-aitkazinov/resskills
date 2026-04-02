@@ -98,9 +98,13 @@ Config is loaded in the preamble at skill startup. Search order (first found win
 
 ### Preamble output
 
-Every skill prints this at startup:
+Every skill prints context at startup. Only lines with actual data appear:
 
 ```
+# Minimal (new project, no config, no experiments yet):
+BRANCH: main | PROJECT: my-new-idea
+
+# Mid-project (has config + experiments):
 BRANCH: experiment/attention | PROJECT: my-research
 CONFIG: resskills.yaml
 METRIC: val_loss (lower_is_better)
@@ -109,11 +113,11 @@ TRAIN: python train.py | FILE: train.py
 VENUE: NeurIPS
 EXPERIMENTS: 12 runs | BEST: 0.892 | LAST: keep
 FINDINGS: 45 lines
-LEARNINGS: 3 entries
---- RECENT LEARNINGS ---
-{"ts":"...","skill":"experiment","type":"technique","content":"cosine schedule > linear","confidence":"high"}
---- END LEARNINGS ---
+LEARNINGS: 28 lines
 ```
+
+If there's no config file, no experiments, no findings, no learnings -- those lines
+simply don't appear. The preamble adapts to whatever stage you're at.
 
 ## Learnings system
 
@@ -121,27 +125,39 @@ Learnings are **per-project**, not global. The `{slug}` is the git repo director
 
 ```
 ~/.resskills/
-├── config.yaml                                ← global user config (optional)
+├── config.yaml                              ← global user config (optional)
 └── projects/
-    ├── my-attention-paper/learnings.jsonl      ← learnings for project A
-    ├── my-diffusion-model/learnings.jsonl      ← learnings for project B
-    └── my-rl-agent/learnings.jsonl             ← learnings for project C
+    ├── my-attention-paper/learnings.md       ← learnings for project A
+    ├── my-diffusion-model/learnings.md       ← learnings for project B
+    └── my-rl-agent/learnings.md              ← learnings for project C
 ```
 
 When you start a session in `my-attention-paper/`, the preamble loads **only that project's learnings**. "AdamW lr=3e-4 works best on this architecture" is specific to that project and shouldn't leak to your diffusion model project.
 
-Format:
+Format is plain Markdown (not JSONL -- human-readable, editable, Claude reads it natively):
 
-```jsonl
-{"ts":"2026-04-02T01:00:00Z","skill":"experiment","type":"technique","content":"AdamW lr=3e-4 + cosine schedule works best here","confidence":"high"}
-{"ts":"2026-04-02T01:30:00Z","skill":"debug","type":"pitfall","content":"NaN loss when batch_size > 64 with this lr","confidence":"high"}
+```markdown
+# Learnings
+
+## Techniques
+- AdamW lr=3e-4 + cosine schedule works best on this architecture (experiment, 2026-04-02)
+- Gradient accumulation over 4 steps equivalent to 4x batch size (experiment, 2026-04-03)
+
+## Pitfalls
+- NaN loss when batch_size > 64 with lr > 0.001 (debug, 2026-04-02)
+
+## Insights
+- Performance plateaus after step 200 regardless of lr (analyze, 2026-04-02)
+
+## Conventions
+- Data lives in /data/v2/, not /data/ (setup-project, 2026-04-01)
 ```
 
-Four types:
-- `technique` -- what works ("cosine schedule beats linear for this architecture")
-- `pitfall` -- what breaks ("NaN at batch_size > 64")
-- `insight` -- what we discovered ("performance plateaus after step 200 regardless of lr")
-- `convention` -- project patterns ("data lives in /data/v2/, not /data/")
+Four sections:
+- `Techniques` -- what works ("cosine schedule beats linear for this architecture")
+- `Pitfalls` -- what breaks ("NaN at batch_size > 64")
+- `Insights` -- what we discovered ("performance plateaus after step 200 regardless of lr")
+- `Conventions` -- project patterns ("data lives in /data/v2/, not /data/")
 
 The 5-minute test: only log if knowing this would save 5+ minutes in a future session.
 

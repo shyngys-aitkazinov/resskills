@@ -9,13 +9,22 @@ Before completing, reflect on this session:
 If yes, log an operational learning for future sessions. Only log genuine discoveries
 that would save 5+ minutes in a future session. Don't log obvious things or transient errors.
 
-```bash
-_SLUG=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "unknown")
-_LEARN_DIR="${HOME}/.resskills/projects/${_SLUG}"
-mkdir -p "$_LEARN_DIR"
-echo '{"ts":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'","skill":"{{SKILL_NAME}}","type":"TYPE","content":"DESCRIPTION","confidence":"high"}' >> "$_LEARN_DIR/learnings.jsonl"
+The learnings file is at `~/.resskills/projects/{slug}/learnings.md`. Create it if it
+doesn't exist. Append under the appropriate section:
+
+```markdown
+## Techniques
+- [learning] (skill, YYYY-MM-DD)
+
+## Pitfalls
+- [learning] (skill, YYYY-MM-DD)
+
+## Insights
+- [learning] (skill, YYYY-MM-DD)
+
+## Conventions
+- [learning] (skill, YYYY-MM-DD)
 ```
 
-Replace TYPE with one of: `technique` (what works), `pitfall` (what breaks),
-`insight` (what we discovered), `convention` (project patterns).
-Replace DESCRIPTION with a one-sentence summary.
+If the file already exists, append to the matching section. If the section doesn't
+exist, create it. Keep entries as one-line bullets.
