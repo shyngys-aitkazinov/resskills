@@ -27,3 +27,24 @@ _LEARN="${HOME}/.resskills/projects/${_SLUG}/learnings.md"
 Use the context above to understand the project state. If a config file exists, use its
 values. If not, infer what you need from the project files, or ask the user if ambiguous.
 Do not assume defaults -- understand the situation and act accordingly.
+
+## Operating Mode
+
+Check the config for `mode:` (defaults to `interactive` if not set).
+The user can also override per-invocation by saying "run autonomously" or "autonomous mode."
+
+**interactive** (default):
+- Ask clarifying questions when input is ambiguous (use AskUserQuestion).
+- Pause at human_checkpoint skills for approval before proceeding.
+- Report findings and wait for direction.
+
+**autonomous**:
+- NEVER ask questions. NEVER pause. NEVER wait for approval. Do NOT use AskUserQuestion.
+- When something is ambiguous, make the best decision you can from available context
+  (project files, research-state.yaml, findings.md, git history, learnings).
+- Log every assumption you made to `research-log.md` with tag `[ASSUMPTION]` so the
+  user can review them later.
+- When a skill finishes, check `research-state.yaml` next_steps and chain into the
+  next skill automatically. Keep going until next_steps is empty or you hit a hard blocker.
+- If truly stuck (no context to infer from, no next_steps), write the blocker to
+  `research-log.md` with tag `[BLOCKED]` and stop. Do not spin.

@@ -50,6 +50,27 @@ Use the context above to understand the project state. If a config file exists, 
 values. If not, infer what you need from the project files, or ask the user if ambiguous.
 Do not assume defaults -- understand the situation and act accordingly.
 
+## Operating Mode
+
+Check the config for `mode:` (defaults to `interactive` if not set).
+The user can also override per-invocation by saying "run autonomously" or "autonomous mode."
+
+**interactive** (default):
+- Ask clarifying questions when input is ambiguous (use AskUserQuestion).
+- Pause at human_checkpoint skills for approval before proceeding.
+- Report findings and wait for direction.
+
+**autonomous**:
+- NEVER ask questions. NEVER pause. NEVER wait for approval. Do NOT use AskUserQuestion.
+- When something is ambiguous, make the best decision you can from available context
+  (project files, research-state.yaml, findings.md, git history, learnings).
+- Log every assumption you made to `research-log.md` with tag `[ASSUMPTION]` so the
+  user can review them later.
+- When a skill finishes, check `research-state.yaml` next_steps and chain into the
+  next skill automatically. Keep going until next_steps is empty or you hit a hard blocker.
+- If truly stuck (no context to infer from, no next_steps), write the blocker to
+  `research-log.md` with tag `[BLOCKED]` and stop. Do not spin.
+
 
 # /analyze -- Statistical Analysis of Experiment Results
 
@@ -110,10 +131,16 @@ os.makedirs('figures', exist_ok=True)
 
 ### Step 5: Summary Report
 
-Output a structured summary:
-```
-## Analysis Summary
+Write the analysis to `analysis/<topic-or-date>.md` (create `analysis/` if needed).
+Use a descriptive name like `analysis/baseline-vs-augmented.md` or `analysis/2026-04-02-lr-sweep.md`.
 
+The file must contain:
+
+```markdown
+# Analysis: <title>
+Date: YYYY-MM-DD
+
+## Summary
 - Total experiments: N
 - Best result: METRIC (commit HASH, "DESCRIPTION")
 - Significant improvements over baseline: [list or "none"]
@@ -122,9 +149,15 @@ Output a structured summary:
 ## Statistical Details
 [table of comparisons with p-values, CIs, effect sizes]
 
-## Figures Generated
-[list of files in figures/]
+## Figures
+[list of files in figures/ with brief description of each]
+
+## Implications
+[what this means for the research direction, 2-3 sentences]
 ```
+
+This file is the persistent artifact. Future sessions read it to understand
+what was analyzed and what was found. Also print the summary to the user.
 
 ---
 
@@ -274,6 +307,48 @@ These are not from the Google guide but are standard practice for ML research co
 - **Round p-values to 3 decimal places**, metrics to 6.
 - **If fewer than 5 data points per condition**, warn that results are unreliable.
 - **Label axes and titles clearly** -- plots may end up in papers.
+
+---
+
+## Persist Results
+
+Before reporting status, save your work so future sessions can pick up where you left off.
+
+### 1. Append to `research-log.md`
+
+Every skill invocation MUST append a timestamped entry:
+
+```markdown
+---
+### [YYYY-MM-DD HH:MM] /skill-name — one-line summary
+<2-5 bullet points: what was done, key result, next action>
+```
+
+Create `research-log.md` if it doesn't exist. Always append, never overwrite.
+
+### 2. Update `research-state.yaml`
+
+Update only the fields your work changed:
+- `timestamp`: now (ISO format)
+- `project`, `branch`: from git
+- `hypothesis` / `hypothesis_status`: if understanding changed
+- `experiment_count`, `best_metric`, `best_commit`: if experiments ran
+- `iteration_phase`: if the project phase advanced
+- `open_questions`: merge new questions with existing
+- `next_steps`: update with concrete next actions
+
+Create from `templates/research-state.yaml` if it doesn't exist.
+
+### 3. Update `findings.md` (only for confirmed results)
+
+Only append when you have a real finding backed by evidence:
+- Experiment showed a statistically significant result
+- Analysis revealed a confirmed pattern
+- A hypothesis was confirmed or refuted with data
+
+Each entry: one bullet with evidence. "X because Y (metric=Z, p=W)".
+Do NOT use `findings.md` for preliminary notes, plans, or speculation.
+Create from `templates/findings.md` if it doesn't exist.
 
 ---
 

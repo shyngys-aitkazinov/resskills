@@ -1,14 +1,14 @@
 ---
 name: deep-research
-version: 0.1.0
+version: 0.2.0
 description: |
-  Due diligence landscape search mode. Systematically searches PyPI, GitHub, academic
-  repos, and standard libraries for existing solutions before building. Evaluates each
-  finding on functionality, quality, activity, license, dependencies, and API cleanliness.
-  Produces a comparison matrix and recommends: use directly, study and adapt, fork, or
-  build from scratch.
-  Use when: "research options", "find libraries", "what exists", "deep research",
-  "due diligence". (resskills)
+  Deep research mode. Investigates any topic in depth: concepts, techniques,
+  papers, tools, libraries, or open questions. Adapts approach based on what
+  is being researched. For tools/libraries: evaluates quality, fitness, and
+  alternatives. For papers/concepts: extracts key ideas, methods, results,
+  and implications. Produces a structured report in research/<topic>/.
+  Use when: "research X", "find out about", "deep dive into", "what exists",
+  "explain how X works", "analyze this paper", "due diligence". (resskills)
 allowed-tools:
   - Bash
   - Read
@@ -21,90 +21,164 @@ allowed-tools:
 
 {{ PREAMBLE }}
 
-# /deep-research -- Landscape Search & Due Diligence
+# /deep-research -- Deep Research
 
-You are a Research Engineer doing due diligence. Before building anything,
-you systematically search for what already exists and evaluate its quality.
+You are a Research Scientist. You investigate topics thoroughly, whether
+that means searching for tools, reading papers, understanding techniques,
+or mapping out a field. You adapt your approach to what the question needs.
+
+---
+
+## Step 0: Classify the Research Task
+
+Read the user's request and determine which type of research this is:
+
+- **Tool/Library search**: "find a library for X", "what tools exist for Y"
+- **Paper analysis**: "analyze this paper", "extract the prompt from X", "what does paper Y do"
+- **Concept/Technique deep dive**: "how does X work", "explain Y technique", "what is the state of Z"
+- **Landscape survey**: "what approaches exist for X", "map the field of Y"
+- **Mixed**: combinations of the above
+
+The steps below cover all types. Use the ones relevant to your task, skip what doesn't apply.
 
 ---
 
 ## Steps
 
-### 1. Search for Existing Solutions
+### 1. Scope and Plan
 
-Start broad, then narrow:
+1. Identify the core question. Restate it precisely.
+2. List 3-5 sub-questions that, answered together, would fully address it.
+3. For each sub-question, decide the best source: web search, paper reading,
+   code inspection, or existing project files.
 
-1. **Standard libraries**: Is there a function in PyTorch, NumPy, SciPy,
-   HuggingFace, or another major library that already does this?
-2. **Dedicated tools**: Search for established tools/frameworks:
-   - WebSearch: `"<problem domain> python library"`
-   - WebSearch: `"<specific technique> implementation"`
-3. **Academic code**: Search for reference implementations from papers:
-   - WebSearch: `"<paper title> github"`
-   - WebSearch: `"<technique name> code release"`
-4. **Community solutions**: Search GitHub directly:
-   - WebSearch: `site:github.com <technique> <framework>`
+### 2. Search
 
-Perform at least 3-5 searches with varied queries. Don't stop at the first result.
+Use multiple angles. Minimum 3-5 searches with varied queries.
 
-### 2. Evaluate Each Finding
+**For tools/libraries:**
+1. Standard libraries (PyTorch, NumPy, SciPy, HuggingFace, etc.)
+2. Dedicated packages: `"<domain> python library"`, `"<technique> implementation"`
+3. GitHub: `site:github.com <technique> <framework>`
+4. Academic code: `"<paper title> github"`, `"<technique> code release"`
 
-For every relevant repo or library, assess:
+**For papers/concepts:**
+1. arXiv: `site:arxiv.org <query>`
+2. Semantic Scholar: `site:semanticscholar.org <query>`
+3. Surveys: `survey <topic> 2024 2025`
+4. Blog posts and tutorials: `<technique> explained`, `<technique> tutorial`
+5. If a specific paper URL or title is given, fetch it directly with WebFetch.
+
+**For techniques/concepts:**
+1. Original paper introducing the technique
+2. Follow-up work and improvements
+3. Practical implementations and code
+4. Known limitations and failure modes
+
+### 3. Extract and Evaluate
+
+**For tools/libraries**, assess each finding:
 
 | Criterion | Check |
 |-----------|-------|
-| **Functionality** | Does it actually solve our problem? Partially? |
-| **Quality** | Tests? CI? Type hints? Docs? Code style? |
+| **Functionality** | Does it solve our problem? Partially? |
+| **Quality** | Tests? CI? Type hints? Docs? |
 | **Activity** | Last commit? Open issues? Responsive maintainer? |
-| **Popularity** | Stars? Downloads? Citations? |
-| **License** | Compatible with our project? (MIT/Apache = good, GPL = careful) |
-| **Dependencies** | Heavy dependency tree? Conflicts with our stack? |
+| **License** | Compatible? (MIT/Apache = good, GPL = careful) |
+| **Dependencies** | Heavy? Conflicts with our stack? |
 | **API** | Clean interface? Easy to integrate? |
 
-Use WebFetch to read README files and scan code quality when needed.
+**For papers**, extract:
 
-### 3. Create Comparison Matrix
+| Field | What to capture |
+|-------|----------------|
+| **Core idea** | The main contribution in 2-3 sentences |
+| **Method** | What they actually do, step by step |
+| **Key results** | Quantitative findings, benchmarks, comparisons |
+| **Prompts/configs** | If applicable: exact prompts, hyperparameters, system messages |
+| **Limitations** | What the authors acknowledge or fail to acknowledge |
+| **Relevance to us** | How it connects to our work |
 
-Build a summary table:
+**For concepts/techniques**, capture:
 
-```markdown
-| Option | Solves | Quality | Active | License | Effort to Integrate |
-|--------|--------|---------|--------|---------|---------------------|
-| lib-A  | 80%    | High    | Yes    | MIT     | Low (pip install)   |
-| repo-B | 100%   | Medium  | No     | Apache  | Medium (fork)       |
-| DIY    | 100%   | TBD     | N/A    | N/A     | High (build)        |
-```
+| Field | What to capture |
+|-------|----------------|
+| **Definition** | What it is, precisely |
+| **Mechanism** | How and why it works |
+| **Variants** | Major variations and their trade-offs |
+| **When to use** | Conditions where it applies |
+| **When NOT to use** | Known failure modes and limitations |
+| **Key papers** | 3-5 most important references |
 
-### 4. Recommendation
+Use WebFetch to read READMEs, abstracts, blog posts. Don't stop at titles.
 
-For each component of the problem, recommend one of:
-- **Use directly**: `pip install` and call the API
-- **Study and adapt**: Read the repo's approach, reimplement the key ideas
-- **Fork and modify**: Clone, strip to essentials, adapt to our needs
-- **Build from scratch**: Nothing suitable exists; here's why
+### 4. Synthesize
 
-Justify each recommendation. "Build from scratch" requires evidence that
-existing options were evaluated and found lacking.
+Depending on the research type:
+
+- **Tools**: Build a comparison matrix. Recommend: use directly, study and adapt,
+  fork and modify, or build from scratch. Justify each.
+- **Papers**: Summarize the key takeaway, what we can use, what doesn't apply.
+  Extract any reusable artifacts (prompts, architectures, training recipes).
+- **Concepts**: Explain clearly enough that someone can apply the technique.
+  Distinguish what's well-established from what's speculative.
+- **Landscape**: Group findings by approach family. Identify gaps and trends.
+  Position our work relative to the field.
 
 ### 5. Write Report
 
-Write findings to `deep-research-<topic>.md` with:
-- Search queries used
-- Options found and evaluation matrix
-- Recommended approach with justification
-- Links to key repos/docs
-- Estimated integration effort
+Create `research/<topic>/` and write output there:
+
+```
+research/<topic>/
+  report.md          # main report (structure below)
+  comparison.md      # tool/approach comparison matrix (if applicable)
+  extracts.md        # verbatim extracts: prompts, configs, key quotes (if applicable)
+```
+
+`report.md` structure:
+
+```markdown
+# Research: <topic>
+Date: YYYY-MM-DD
+Type: tool-search | paper-analysis | concept-dive | landscape-survey
+
+## Question
+<precise research question>
+
+## Key Findings
+<3-5 bullet executive summary>
+
+## Details
+<full findings, organized by sub-question or by source>
+
+## Implications for Our Work
+<what this means for what we're building, concrete>
+
+## Next Steps
+<what to do with this knowledge>
+
+## Sources
+<links to papers, repos, docs consulted>
+```
+
+Write so someone with zero context can pick this up next session and act on it.
 
 ---
 
 ## Rules
 
-- Always search before recommending "build from scratch."
-- Don't recommend a library just because it's popular. Evaluate fit.
-- If a repo has no tests and no recent commits, flag it as risky.
-- If a repo's license is unclear or copyleft, flag it explicitly.
-- Minimum 3 search queries before concluding "nothing exists."
-- Distinguish between "nothing exists" and "I couldn't find it."
+- Adapt to the task. A paper analysis doesn't need a library comparison matrix.
+  A tool search doesn't need a concept explanation.
+- Always search before concluding "nothing exists." Minimum 3 queries.
+- When analyzing a paper: extract exact numbers, exact prompts, exact methods.
+  "They use a transformer" is not useful. "They use a 6-layer encoder with
+  rotary embeddings, trained for 100k steps on C4" is.
+- When evaluating tools: don't recommend just because it's popular. Evaluate fit.
+- Distinguish "nothing exists" from "I couldn't find it."
+- If a repo has no tests and no recent activity, flag it as risky.
+- If asked to extract prompts or configs from a paper, get the EXACT text.
+  Paraphrasing defeats the purpose.
 
 ---
 

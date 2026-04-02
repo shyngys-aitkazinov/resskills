@@ -15,6 +15,7 @@ allowed-tools:
   - Write
   - Grep
   - Glob
+  - AskUserQuestion
 ---
 
 {{ PREAMBLE }}
@@ -123,7 +124,8 @@ Pause the inner loop briefly to reflect:
 1. Review all results since last reflection
 2. Cluster by type: what worked? what didn't?
 3. Ask WHY -- identify mechanisms, not just correlations
-4. Update `findings.md` with narrative synthesis
+4. Update `findings.md` ONLY with evidence-backed results (e.g., "X improved metric
+   by Y%, p=Z across N runs"). Log interpretive narrative to `research-log.md` instead.
 5. Decide direction: DEEPEN (more of what works), BROADEN (try new dimension),
    PIVOT (abandon current approach), or CONCLUDE (enough evidence to write up)
 

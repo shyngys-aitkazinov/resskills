@@ -2,14 +2,21 @@
   "permissions": {
     "allow": [
       "Bash",
-      "Edit",
-      "Write",
       "Read",
+      "Edit",
+      "MultiEdit",
+      "Write",
       "Glob",
       "Grep",
-      "WebSearch",
+      "LS",
       "WebFetch",
+      "WebSearch",
       "Agent",
+      "Task",
+      "TodoRead",
+      "TodoWrite",
+      "NotebookEdit",
+      "AskHuman",
       "mcp__claude_ai_Notion__*"
     ]
   }

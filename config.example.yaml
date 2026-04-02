@@ -29,6 +29,21 @@ protect_dirs:
   - checkpoints/
 
 # Behavior
-human_checkpoint:                  # Skills that pause for user approval
+mode: interactive                  # interactive | autonomous
+#
+# interactive (default):
+#   Skills ask clarifying questions when input is ambiguous.
+#   Skills pause at human_checkpoint points for approval.
+#   Good for: daytime work, pair-programming with the agent.
+#
+# autonomous:
+#   Skills NEVER ask questions. They infer from context, make best-effort
+#   decisions, and document every assumption in research-log.md.
+#   Skills loop and chain into each other without stopping.
+#   Good for: overnight runs, unattended research, auto-research loops.
+#
+# You can also pass mode per-invocation: "run in autonomous mode"
+
+human_checkpoint:                  # Skills that pause for user approval (interactive mode only)
   - hypothesis
   - paper-write

@@ -22,6 +22,10 @@ hooks:
           statusMessage: "Checking for destructive commands..."
 ---
 
+<!-- Design note: /careful is a safety guardrail, not a research skill.
+     It does not produce research artifacts and intentionally omits
+     COMPLETION_PROTOCOL and LEARNINGS_EPILOGUE blocks. -->
+
 # /careful -- Research Data Guardrails
 
 Safety mode is now **active**. Every bash command will be checked for destructive

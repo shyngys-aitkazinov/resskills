@@ -78,10 +78,16 @@ os.makedirs('figures', exist_ok=True)
 
 ### Step 5: Summary Report
 
-Output a structured summary:
-```
-## Analysis Summary
+Write the analysis to `analysis/<topic-or-date>.md` (create `analysis/` if needed).
+Use a descriptive name like `analysis/baseline-vs-augmented.md` or `analysis/2026-04-02-lr-sweep.md`.
 
+The file must contain:
+
+```markdown
+# Analysis: <title>
+Date: YYYY-MM-DD
+
+## Summary
 - Total experiments: N
 - Best result: METRIC (commit HASH, "DESCRIPTION")
 - Significant improvements over baseline: [list or "none"]
@@ -90,9 +96,15 @@ Output a structured summary:
 ## Statistical Details
 [table of comparisons with p-values, CIs, effect sizes]
 
-## Figures Generated
-[list of files in figures/]
+## Figures
+[list of files in figures/ with brief description of each]
+
+## Implications
+[what this means for the research direction, 2-3 sentences]
 ```
+
+This file is the persistent artifact. Future sessions read it to understand
+what was analyzed and what was found. Also print the summary to the user.
 
 ---
 

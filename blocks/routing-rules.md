@@ -8,7 +8,7 @@ The skill has specialized workflows that produce better results than ad-hoc answ
 - "Is this idea worth pursuing", research direction, scope -> invoke `/pi-review`
 - "What's the state of the art", related work, literature, papers on X -> invoke `/lit-review`
 - "Design an experiment", hypothesis, "how to test X" -> invoke `/hypothesis`
-- "What tools exist for", "what libraries", "find repos for" -> invoke `/deep-research`
+- "What tools exist for", "what libraries", "find repos for", "research X", "deep dive into", "analyze this paper", "extract the prompt from", "how does X work" -> invoke `/deep-research`
 - "How to integrate", "use this repo", "add this library" -> invoke `/integrate`
 - "Write the training code", implement, "code the model" -> invoke `/implement`
 - "Run experiments", "start the loop", "overnight run" -> invoke `/experiment`
@@ -27,3 +27,20 @@ The skill has specialized workflows that produce better results than ad-hoc answ
 - "Weekly retro", "what worked this week" -> invoke `/retro`
 
 **Do NOT answer directly when a matching skill exists.** Invoke the skill first.
+
+### Autonomous Chaining
+
+In **autonomous mode**, after a skill completes:
+
+1. Read `research-state.yaml` for `next_steps`.
+2. Pick the highest-priority next step.
+3. Map it to a skill using the routing rules above.
+4. Invoke that skill immediately. Do not stop to summarize or wait.
+5. Repeat until `next_steps` is empty or you hit a `[BLOCKED]` state.
+
+This enables overnight research loops: hypothesis -> experiment -> analyze -> experiment -> ...
+
+The chain stops when:
+- `next_steps` is empty (all planned work done)
+- A skill writes `[BLOCKED]` to research-log.md (hard blocker, no way to infer)
+- The same skill fails 3 times in a row (something is fundamentally wrong)
