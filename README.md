@@ -4,24 +4,37 @@ Virtual AI research team for Claude Code. 21 skills that turn a solo AI/CS resea
 
 ## Installation
 
-### Via pip / uv (recommended)
-
-```bash
-pip install git+https://github.com/shyngys-aitkazinov/resskills.git
-# or
-uv pip install git+https://github.com/shyngys-aitkazinov/resskills.git
-```
-
-This installs two CLI commands: `resskills-gen` and `resskills-config`.
-
-### As Claude Code skills pack
+### Quick install (30 seconds)
 
 ```bash
 git clone https://github.com/shyngys-aitkazinov/resskills.git ~/.claude/skills/resskills
-cd ~/.claude/skills/resskills
-uv sync
-uv run resskills-gen
+~/.claude/skills/resskills/setup
 ```
+
+The setup script:
+1. Installs Python dependencies via `uv`
+2. Generates all SKILL.md files from templates
+3. Creates symlinks so Claude Code discovers each skill as a top-level `/command`
+
+After setup, you can use `/experiment`, `/review`, `/hypothesis`, etc. in any Claude Code session.
+
+### What setup does (symlinks)
+
+Claude Code discovers skills at `~/.claude/skills/*/SKILL.md`. The setup script
+creates symlinks from each skill directory up one level:
+
+```
+~/.claude/skills/
+├── resskills/              ← the cloned repo
+│   ├── experiment/SKILL.md
+│   ├── review/SKILL.md
+│   └── ...
+├── experiment -> resskills/experiment   ← symlink (created by setup)
+├── review -> resskills/review           ← symlink
+└── ...
+```
+
+This is the same pattern [gstack](https://github.com/garrytan/gstack) uses.
 
 ### Development
 
@@ -29,9 +42,18 @@ uv run resskills-gen
 git clone https://github.com/shyngys-aitkazinov/resskills.git
 cd resskills
 uv sync
-uv run resskills-gen        # Generate SKILL.md files from templates
-uv run resskills-config get primary_metric  # Read config
+uv run resskills-gen           # Regenerate SKILL.md files from templates
+uv run resskills-gen --dry-run # Check if generated files are fresh
 ```
+
+### pip install (CLI tools only)
+
+```bash
+pip install git+https://github.com/shyngys-aitkazinov/resskills.git
+```
+
+This installs `resskills-gen` and `resskills-config` CLI commands but does NOT
+register skills with Claude Code. Use the quick install above for that.
 
 ## Quick Start
 
