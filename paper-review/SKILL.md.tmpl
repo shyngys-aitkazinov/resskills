@@ -2,9 +2,13 @@
 name: paper-review
 version: 0.1.0
 description: |
-  Simulate a conference reviewer. Provides structured review with scores,
-  strengths, weaknesses, and decision. Use when asked to "review the paper",
-  "what would reviewers say?", "simulate review", or "pre-submission check".
+  Conference reviewer simulation mode. Five-dimension quality rubric (0-100): novelty,
+  soundness, significance, clarity, reproducibility. Reads full paper and raw experiment
+  data. Outputs structured review: specific strengths, weaknesses with suggested fixes,
+  author-response questions, minor comments. Decision: ACCEPT, MINOR_REVISION,
+  MAJOR_REVISION, or REJECT with confidence level.
+  Use when: "review the paper", "what would reviewers say?", "simulate review",
+  "pre-submission check", "paper review". (resskills)
 allowed-tools:
   - Bash
   - Read

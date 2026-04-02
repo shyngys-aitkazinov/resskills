@@ -5,11 +5,13 @@
 name: second-opinion
 version: 0.1.0
 description: |
-  Cross-model independent verification. Launches a fresh Agent subagent with
-  minimal context to independently evaluate code, methodology, claims, or
-  results. Reports agreements, disagreements, and new issues found.
-  Use when asked for "second opinion", "independent review", "sanity check",
-  or "verify this".
+  Independent verification via fresh subagent mode. Launches Agent with minimal context
+  (no accumulated bias, no leading questions). Subagent reviews code/methodology/claims/
+  results from scratch. Compares findings: agreements (high confidence), disagreements
+  (investigate), new issues (blind spots). Reports with recommendation. One review
+  target per invocation.
+  Use when: "second opinion", "independent review", "sanity check", "verify this",
+  "fresh eyes". (resskills)
 allowed-tools:
   - Bash
   - Read

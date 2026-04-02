@@ -5,9 +5,11 @@
 name: careful
 version: 0.1.0
 description: |
-  Safety guardrails for research data. Warns before deleting experiment results,
-  overwriting model checkpoints, or modifying eval scripts. Use when asked to
-  "be careful", "safety mode", or "protect my data".
+  Research data safety guardrail mode. Pre-tool hook intercepts every bash command and
+  blocks destructive patterns: rm -rf on experiments/checkpoints/data, git reset --hard,
+  git push --force, eval script overwrites. Allows safe exceptions (pycache, node_modules,
+  build artifacts). Session-scoped activation.
+  Use when: "be careful", "safety mode", "protect my data", "guardrails on". (resskills)
 allowed-tools:
   - Bash
   - Read

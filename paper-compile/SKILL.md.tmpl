@@ -2,9 +2,13 @@
 name: paper-compile
 version: 0.1.0
 description: |
-  Compile LaTeX paper to PDF. Fixes common errors, checks page limits,
-  verifies figure references, runs pre-submission checklist. Use when asked
-  to "compile the paper", "build PDF", "fix LaTeX errors", or "prepare submission".
+  LaTeX compilation and pre-submission checks mode. Runs latexmk, auto-fixes common
+  errors (missing .sty, undefined references, overfull hboxes, bibtex/biber issues).
+  Checks page limits per venue, verifies figure references exist and are referenced.
+  Anonymization check for double-blind: no author names, no institution paths, no
+  GitHub links. Iterates up to 3 fix-recompile cycles for clean build.
+  Use when: "compile the paper", "build PDF", "fix LaTeX errors", "prepare submission",
+  "paper compile". (resskills)
 allowed-tools:
   - Bash
   - Read

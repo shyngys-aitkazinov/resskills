@@ -5,10 +5,13 @@
 name: review
 version: 0.1.0
 description: |
-  Adversarial methodology review. Checks for data leakage, statistical rigor,
-  baseline fairness, ablation completeness, reproducibility, overclaiming, and
-  cherry-picking. Use when asked to "review methodology", "sanity check",
-  "find holes", or "stress test our approach".
+  Adversarial methodology reviewer mode. Seven-item checklist: data leakage, statistical
+  rigor, baseline fairness, ablation completeness, reproducibility, overclaiming,
+  cherry-picking. Each item scored PASS/WARN/FAIL with evidence. Checks results.tsv
+  for full run history to detect unreported failures. Verdict: READY_FOR_SUBMISSION,
+  NEEDS_REVISION, or MAJOR_ISSUES.
+  Use when: "review methodology", "sanity check", "find holes", "stress test our
+  approach", "methodology audit". (resskills)
 allowed-tools:
   - Bash
   - Read

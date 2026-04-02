@@ -2,10 +2,13 @@
 name: lit-review
 version: 0.1.0
 description: |
-  Literature search and novelty check. Searches arXiv, Semantic Scholar, and
-  Google Scholar for related work. Creates structured literature notes and
-  BibTeX entries. Use when asked to "find related work", "literature review",
-  "novelty check", or "what papers are relevant?".
+  Literature search and novelty check mode. Searches arXiv, Semantic Scholar, Google
+  Scholar via WebSearch for 10-15 relevant papers. Creates structured literature notes
+  from template: key idea, method, results, relation to our work. Synthesizes gaps
+  across approach taxonomy. Novelty check vs closest prior work: NOVEL/INCREMENTAL/
+  NOT_NOVEL per claim. Generates verified BibTeX entries in references.bib.
+  Use when: "find related work", "literature review", "novelty check", "what papers
+  are relevant?", "prior work". (resskills)
 allowed-tools:
   - Bash
   - Read

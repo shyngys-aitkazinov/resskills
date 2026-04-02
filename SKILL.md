@@ -5,9 +5,12 @@
 name: resskills
 version: 0.1.0
 description: |
-  Virtual AI research team. Routes requests to specialized research skills:
-  experiment loops, literature review, paper writing, code quality, debugging,
-  and more. Use when working on AI/ML research projects.
+  Research team router mode. Dispatches to 20 specialized AI/ML research skills:
+  experiment loops, hypothesis design, debugging, code quality, statistical analysis,
+  literature review, paper writing/review/compilation, integration, and more.
+  Reads the request, picks the right sub-skill, and delegates.
+  Use when: "run experiments", "write the paper", "debug", "literature review",
+  "analyze results", "code quality", or any research task. (resskills)
 allowed-tools:
   - Bash
   - Read

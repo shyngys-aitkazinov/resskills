@@ -2,9 +2,13 @@
 name: code-quality
 version: 0.1.0
 description: |
-  Python code quality enforcement. Runs linters, formatters, type checkers.
-  Checks research-specific patterns. Fixes issues automatically where possible.
-  Use when asked to "check code quality", "lint", "clean up code", or "enforce standards".
+  Python code quality enforcement mode. Runs ruff (lint + format) and mypy type checking.
+  Checks Google Python Style compliance: type hints, docstrings, naming conventions.
+  Research-specific antipatterns: missing seeds, print instead of logging, string paths
+  instead of pathlib, hardcoded hyperparameters, import *, unguarded CUDA calls.
+  Auto-fixes where possible, reports remaining issues as recommendations.
+  Use when: "check code quality", "lint", "clean up code", "enforce standards",
+  "code review". (resskills)
 allowed-tools:
   - Bash
   - Read

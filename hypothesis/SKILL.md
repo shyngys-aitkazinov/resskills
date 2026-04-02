@@ -5,11 +5,13 @@
 name: hypothesis
 version: 0.1.0
 description: |
-  Formulate testable hypotheses and design rigorous experiments. Transforms
-  vague research questions into falsifiable hypotheses with clear variables,
-  controls, ablations, and success criteria.
-  Use when asked to "design an experiment", "formulate a hypothesis", or
-  "plan a study".
+  Research scientist experiment design mode. Transforms vague research questions into
+  falsifiable hypotheses with mechanism ("because" clause), null hypothesis, independent/
+  dependent/confounding variables, control and ablation designs, success criteria with
+  statistical tests and minimum effect sizes, and a time budget estimate. Outputs a
+  structured experiment-plan.md.
+  Use when: "design an experiment", "formulate a hypothesis", "plan a study",
+  "what should we test?". (resskills)
 allowed-tools:
   - Bash
   - Read

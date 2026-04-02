@@ -5,10 +5,12 @@
 name: experiment
 version: 0.1.0
 description: |
-  Autonomous experiment loop. Modifies code, trains, evaluates, keeps improvements,
-  discards failures. Git as memory. Runs indefinitely (~12 experiments/hour).
-  Use when asked to "run experiments", "start the loop", "overnight run",
-  or "try things autonomously".
+  Autonomous ML experiment runner mode. Modify-train-evaluate loop: edits code, runs
+  training, keeps improvements, git-reverts failures. Git history as experiment memory.
+  Seven-phase cycle (review, ideate, modify, commit, run, guard, decide) with outer-loop
+  reflection every 5-10 experiments. Runs indefinitely at ~12 experiments/hour.
+  Use when: "run experiments", "start the loop", "overnight run", "try things
+  autonomously", "experiment loop". (resskills)
 allowed-tools:
   - Bash
   - Read

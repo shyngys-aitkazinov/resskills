@@ -2,10 +2,13 @@
 name: integrate
 version: 0.1.0
 description: |
-  Integration strategy for 3rd party code. Assesses quality, chooses an
-  integration approach (depend, wrap, fork, extract, or work-within), and
-  plans the implementation. Use when asked to "integrate", "incorporate",
-  "add this library", or "use this repo".
+  Staff engineer 3rd-party integration mode. Clones or inspects external code, runs a
+  structured quality assessment (tests, docs, maintenance, license, dependencies), then
+  picks one of five strategies: pip-depend, CLI/API-wrap, fork-and-adapt, extract-patterns,
+  or work-within. Plans files to modify, interface design, testing, and fallback. Enforces
+  isolated imports and version pinning.
+  Use when: "integrate", "incorporate", "add this library", "use this repo",
+  "wrap this API". (resskills)
 allowed-tools:
   - Bash
   - Read

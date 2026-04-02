@@ -5,9 +5,13 @@
 name: pi-review
 version: 0.1.0
 description: |
-  Principal Investigator scope review. Evaluates research direction on novelty,
-  feasibility, scope, and impact. Use when asked to "evaluate this idea",
-  "is this worth pursuing?", "scope check", or "PI review".
+  Principal Investigator scope review mode. Evaluates novelty, feasibility, scope (lake
+  vs ocean), and impact, each rated 1-10. Searches prior work to calibrate novelty
+  honestly. Identifies top 3 failure risks. Recommends: PROCEED, NARROW (with specific
+  scope cuts), PIVOT (with reframing), or ABANDON. Includes first-week milestone, cut
+  criterion, and minimum viable result.
+  Use when: "evaluate this idea", "is this worth pursuing?", "scope check", "PI review",
+  "research direction". (resskills)
 allowed-tools:
   - Bash
   - Read

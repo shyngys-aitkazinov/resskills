@@ -5,10 +5,12 @@
 name: implement
 version: 0.1.0
 description: |
-  Write ML training, evaluation, and data processing code. Follows Google
-  Python Style with strict research conventions: reproducible seeds, proper
-  logging, clean data splits, and complete checkpointing.
-  Use when asked to "implement", "write code", "build", or "code up".
+  ML research code implementation mode. Writes training, evaluation, and data processing
+  scripts following Google Python Style. Enforces reproducible seeds, logging (no print),
+  pathlib paths, named constants, strict train/val/test split isolation, full-state
+  checkpointing, and parseable metric output for the experiment loop.
+  Use when: "implement", "write code", "build", "code up", "write the training
+  script". (resskills)
 allowed-tools:
   - Bash
   - Read

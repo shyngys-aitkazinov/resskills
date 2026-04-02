@@ -2,10 +2,12 @@
 name: checkpoint
 version: 0.1.0
 description: |
-  Save or resume research state. Snapshots the current hypothesis, results,
-  open questions, and git state to a timestamped JSON file. On resume, reads
-  the latest checkpoint and reconstructs context.
-  Use when asked to "save progress", "checkpoint", "resume", or "where was I".
+  Research session persistence mode. Save: snapshots hypothesis, experiment count, best
+  result, next steps, open questions, blockers, and git state into a timestamped JSON
+  checkpoint. Resume: reads the latest checkpoint, reconstructs full context, verifies
+  git state drift, and briefs you on where you left off.
+  Two modes: save (default) and resume.
+  Use when: "save progress", "checkpoint", "resume", "where was I", "load checkpoint". (resskills)
 allowed-tools:
   - Bash
   - Read

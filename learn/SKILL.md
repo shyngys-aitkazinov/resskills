@@ -5,10 +5,13 @@
 name: learn
 version: 0.1.0
 description: |
-  Manage cross-session learnings. View, search, prune, export, and add
-  learnings stored in ~/.resskills/projects/{slug}/learnings.jsonl.
-  Use when asked to "show learnings", "search learnings", "prune learnings",
-  "export learnings", or "add a learning".
+  Cross-session knowledge manager mode. Maintains a JSONL store of project learnings
+  (techniques that work, pitfalls to avoid, insights discovered, conventions adopted)
+  at ~/.resskills/projects/{slug}/learnings.jsonl. Five commands: view (grouped by type),
+  search (case-insensitive grep), prune (stale/contradiction cleanup), export (markdown
+  for CLAUDE.md), and add (manual entry with confidence level).
+  Use when: "show learnings", "search learnings", "prune learnings", "export learnings",
+  "add a learning", "what do we know?". (resskills)
 allowed-tools:
   - Bash
   - Read

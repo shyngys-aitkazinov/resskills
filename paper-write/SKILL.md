@@ -5,10 +5,14 @@
 name: paper-write
 version: 0.1.0
 description: |
-  Draft paper sections following venue format. Maintains a claims-evidence
-  matrix. Anti-hallucination citation verification. Use when asked to
-  "write the paper", "draft introduction", "write related work", or
-  "prepare submission".
+  Paper section drafting mode. Follows venue format (NeurIPS/ICML/ICLR) for abstract,
+  intro, related work, method, experiments, conclusion. Claims-evidence matrix: maps
+  every claim to results.tsv data with strength ratings (strong/medium/weak).
+  Anti-hallucination citation protocol: verifies references via DBLP/CrossRef, inserts
+  [CITATION NEEDED] for unverifiable papers. De-AI writing polish: active voice, no
+  weasel words, consistent terminology.
+  Use when: "write the paper", "draft introduction", "write related work", "prepare
+  submission", "paper draft". (resskills)
 allowed-tools:
   - Bash
   - Read

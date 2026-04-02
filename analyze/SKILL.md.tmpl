@@ -2,10 +2,13 @@
 name: analyze
 version: 0.1.0
 description: |
-  Statistical analysis of experiment results. Reads results.tsv, computes
-  significance tests, confidence intervals, effect sizes. Generates publication-
-  quality matplotlib plots. Use when asked to "analyze results", "make plots",
-  "are these results significant?", or "summarize experiments".
+  Data scientist statistical analysis mode. Reads experiments/results.tsv, computes
+  descriptive stats, paired t-tests, bootstrap 95% CIs (10k resamples), Cohen's d effect
+  sizes, and Bonferroni correction for multiple comparisons. Generates publication-quality
+  matplotlib plots: learning curves, comparison bar charts, ablation tables, box plots
+  at 300 DPI. Outputs a structured summary with exact p-values and honest interpretation.
+  Use when: "analyze results", "make plots", "are these results significant?",
+  "summarize experiments", "statistical analysis". (resskills)
 allowed-tools:
   - Bash
   - Read

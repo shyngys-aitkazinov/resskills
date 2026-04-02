@@ -5,9 +5,12 @@
 name: debug
 version: 0.1.0
 description: |
-  Scientific-method debugging for ML code. Observes symptoms, forms hypotheses,
-  tests them systematically, and confirms root cause before applying fixes.
-  Use when something is broken, producing wrong results, or behaving unexpectedly.
+  Scientific-method ML debugger mode. Four-phase cycle: observe symptoms, form ranked
+  hypotheses with falsification criteria, test each in isolation, confirm root cause
+  before any fix. Covers NaN loss, OOM, accuracy degradation, data pipeline bugs, and
+  silent correctness errors. Iron law: no fix without a stated root cause.
+  Use when: "debug", "why is this broken", "NaN loss", "OOM", "wrong results",
+  "behaving unexpectedly". (resskills)
 allowed-tools:
   - Bash
   - Read
