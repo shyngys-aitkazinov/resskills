@@ -26,9 +26,20 @@ SKILL.md.tmpl         (human-written per-skill content + {{ placeholders }})
 SKILL.md              (generated, committed, what Claude Code reads)
 ```
 
-### Available placeholders
+### How placeholders work
 
-Templates contain the workflows, tips, and examples that require human judgment. Placeholders are filled from `blocks/*.md` at build time:
+Placeholders use Jinja2 `{{ }}` syntax. The mechanism is simple text substitution:
+
+1. `resskills-gen` reads every `.md` file in `blocks/` and builds a dictionary:
+   - `blocks/preamble.md` → variable `PREAMBLE` (filename stem, uppercased, hyphens → underscores)
+   - `blocks/python-standards.md` → variable `PYTHON_STANDARDS`
+   - etc.
+2. For each `SKILL.md.tmpl`, Jinja2 replaces `{{ PREAMBLE }}` with the **entire contents** of `blocks/preamble.md`
+3. The result is written as `SKILL.md`
+
+So `{{ PREAMBLE }}` literally means "paste `blocks/preamble.md` here." No logic, no conditionals, just text injection. The benefit: change `blocks/preamble.md` once, regenerate, all 21 skills update.
+
+### Available placeholders
 
 | Placeholder | Source | What it generates | Used by |
 |-------------|--------|-------------------|---------|
@@ -106,14 +117,31 @@ LEARNINGS: 3 entries
 
 ## Learnings system
 
-Skills log operational discoveries to `~/.resskills/projects/{slug}/learnings.jsonl`:
+Learnings are **per-project**, not global. The `{slug}` is the git repo directory name:
+
+```
+~/.resskills/
+├── config.yaml                                ← global user config (optional)
+└── projects/
+    ├── my-attention-paper/learnings.jsonl      ← learnings for project A
+    ├── my-diffusion-model/learnings.jsonl      ← learnings for project B
+    └── my-rl-agent/learnings.jsonl             ← learnings for project C
+```
+
+When you start a session in `my-attention-paper/`, the preamble loads **only that project's learnings**. "AdamW lr=3e-4 works best on this architecture" is specific to that project and shouldn't leak to your diffusion model project.
+
+Format:
 
 ```jsonl
 {"ts":"2026-04-02T01:00:00Z","skill":"experiment","type":"technique","content":"AdamW lr=3e-4 + cosine schedule works best here","confidence":"high"}
 {"ts":"2026-04-02T01:30:00Z","skill":"debug","type":"pitfall","content":"NaN loss when batch_size > 64 with this lr","confidence":"high"}
 ```
 
-Four types: `technique` (what works), `pitfall` (what breaks), `insight` (what we discovered), `convention` (project patterns).
+Four types:
+- `technique` -- what works ("cosine schedule beats linear for this architecture")
+- `pitfall` -- what breaks ("NaN at batch_size > 64")
+- `insight` -- what we discovered ("performance plateaus after step 200 regardless of lr")
+- `convention` -- project patterns ("data lives in /data/v2/, not /data/")
 
 The 5-minute test: only log if knowing this would save 5+ minutes in a future session.
 
@@ -149,7 +177,7 @@ OUTER LOOP (reflective, every 5-10 experiments):
 
 ## What's intentionally not here
 
-- **No browser automation.** Research doesn't need it. Use gstack for that.
+- **No browser automation.** If you need it, install [gstack](https://github.com/garrytan/gstack) alongside resskills. The two packs coexist -- gstack handles `/browse`, `/qa`, `/ship`; resskills handles `/experiment`, `/review`, `/paper-write`. No conflicts.
 - **No MCP servers.** Cross-model review uses Agent subagents, not external services.
 - **No telemetry.** Personal research tool, not a product.
 - **No multi-user support.** One researcher, one machine.
