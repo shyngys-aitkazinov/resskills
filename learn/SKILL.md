@@ -3,12 +3,12 @@
 
 ---
 name: learn
-version: 0.2.0
+version: 0.3.0
 description: |
-  Cross-session knowledge manager mode. Maintains a Markdown file of project learnings
-  (techniques that work, pitfalls to avoid, insights discovered, conventions adopted)
-  at ~/.resskills/projects/{slug}/learnings.md. Five commands: view, search, prune,
-  export (for CLAUDE.md), and add (manual entry).
+  Cross-session knowledge manager mode. Maintains two tiers of learnings:
+  (1) Project learnings in `learnings.md` at the project root (committed, shared),
+  (2) User learnings in `~/.resskills/projects/{slug}/learnings.local.md` (personal).
+  Five commands: view, search, prune, export (for CLAUDE.md), and add (manual entry).
   Use when: "show learnings", "search learnings", "prune learnings", "export learnings",
   "add a learning", "what do we know?". (resskills)
 allowed-tools:
@@ -42,9 +42,12 @@ fi
 [ -f research-state.yaml ] && echo "STATE: research-state.yaml"
 [ -f findings.md ] && echo "FINDINGS: findings.md ($(wc -l < findings.md 2>/dev/null | tr -d ' ') lines)"
 
-# Learnings (per-project, if any)
-_LEARN="${HOME}/.resskills/projects/${_SLUG}/learnings.md"
-[ -f "$_LEARN" ] && echo "LEARNINGS: $_LEARN ($(wc -l < "$_LEARN" 2>/dev/null | tr -d ' ') lines)"
+# Project learnings (committed, shared)
+[ -f learnings.md ] && echo "LEARNINGS (project): learnings.md ($(wc -l < learnings.md 2>/dev/null | tr -d ' ') lines)"
+
+# User learnings (local, personal)
+_LEARN_LOCAL="${HOME}/.resskills/projects/${_SLUG}/learnings.local.md"
+[ -f "$_LEARN_LOCAL" ] && echo "LEARNINGS (user): $_LEARN_LOCAL ($(wc -l < "$_LEARN_LOCAL" 2>/dev/null | tr -d ' ') lines)"
 ```
 
 Use the context above to understand the project state. If a config file exists, use its
@@ -82,8 +85,13 @@ project has learned across sessions.
 
 ## Storage Format
 
-Learnings live at `~/.resskills/projects/{slug}/learnings.md`.
-The file is plain Markdown with four sections:
+Learnings are split into two tiers:
+
+### Tier 1: Project learnings (committed, shared)
+
+File: `learnings.md` in the project root.
+Contains knowledge about the project itself -- conventions, pitfalls, techniques,
+insights that any collaborator would benefit from.
 
 ```markdown
 # Learnings
@@ -102,7 +110,36 @@ The file is plain Markdown with four sections:
 - Data lives in /data/v2/, not /data/ (setup-project, 2026-04-01)
 ```
 
+### Tier 2: User learnings (not committed, personal)
+
+File: `~/.resskills/projects/{slug}/learnings.local.md`.
+Contains knowledge about the user's local environment, personal preferences,
+or machine-specific quirks.
+
+```markdown
+# Learnings (local)
+
+## Environment
+- On M1 Mac, matplotlib requires pyobjc-framework-Cocoa for interactive plots (debug, 2026-04-03)
+
+## Preferences
+- User prefers single bundled PRs over many small ones for refactors (feedback, 2026-04-02)
+```
+
 Each entry is a single bullet line: `- [learning] (skill, YYYY-MM-DD)`.
+
+### Decision criteria
+
+| Learning about... | Tier | Why |
+|---|---|---|
+| Build system, architecture, conventions | Project | Project fact, useful to all |
+| Known bugs or quirks in project code | Project | Anyone touching that code needs to know |
+| Integration patterns, techniques | Project | Reusable knowledge |
+| Local machine setup, OS quirks | User | Machine-specific |
+| API rate limits, account constraints | User | Account-specific |
+| Personal style preferences | User | Individual preference |
+
+If unsure, default to project learnings. Most discoveries are project-level.
 
 ## Learning Types
 
@@ -119,37 +156,39 @@ Each entry is a single bullet line: `- [learning] (skill, YYYY-MM-DD)`.
 
 ### `/learn` (no arguments)
 
-Show the current learnings file.
+Show all learnings from both tiers.
 
-1. Read `~/.resskills/projects/{slug}/learnings.md`.
-2. If it doesn't exist, say "No learnings recorded yet. Use `/learn add` to start."
-3. Display the file contents.
+1. Read `learnings.md` (project root) if it exists.
+2. Read `~/.resskills/projects/{slug}/learnings.local.md` if it exists.
+3. If neither exists, say "No learnings recorded yet. Use `/learn add` to start."
+4. Display both, clearly labeled as **Project** and **User** learnings.
 
 ### `/learn search <query>`
 
-Search learnings for matching entries.
+Search learnings for matching entries across both files.
 
-1. Grep the learnings file for lines containing the query (case-insensitive).
-2. Display matching lines grouped by their section.
+1. Grep both learnings files for lines containing the query (case-insensitive).
+2. Display matching lines grouped by their section and tier.
 3. If no matches, say "No learnings match '<query>'."
 
 ### `/learn prune`
 
 Check for stale or contradictory learnings. Interactive cleanup.
 
-1. Read the full learnings file.
+1. Read both learnings files.
 2. **Stale check**: If a learning mentions a specific file path, verify the file
    still exists. If deleted, flag as potentially stale.
 3. **Contradiction check**: Look for entries that say opposite things about the
    same topic (e.g., "lr=3e-4 works" vs "lr=3e-4 causes divergence").
-4. For each flagged entry, ask the user: Remove, Keep, or Update.
-5. Edit the file with the user's decisions.
+4. **Tier check**: Flag any user learnings that look project-level, or vice versa.
+5. For each flagged entry, ask the user: Remove, Keep, Update, or Move (to other tier).
+6. Edit the files with the user's decisions.
 
 ### `/learn export`
 
 Format learnings for pasting into CLAUDE.md or other docs.
 
-1. Read the learnings file.
+1. Read both learnings files.
 2. Print the contents (it's already Markdown, so it's ready to paste).
 3. Do NOT write to a file unless asked.
 
@@ -158,13 +197,15 @@ Format learnings for pasting into CLAUDE.md or other docs.
 Manually add a learning.
 
 1. Ask the user for:
-   - **type**: technique, pitfall, insight, or convention
+   - **type**: technique, pitfall, insight, convention (project) or environment, preference (user)
    - **what**: the learning itself (one sentence)
-2. Auto-fill the skill name (`learn`) and date (today).
-3. Append to the matching section in the learnings file. Create the file and
-   parent directories if they don't exist.
-4. If the file is new, create it with the `# Learnings` header and all four sections.
-5. Confirm: "Added [type]: [learning]"
+2. Auto-determine the tier from the type (environment/preference → user, everything else → project).
+   If ambiguous, ask which tier.
+3. Auto-fill the skill name (`learn`) and date (today).
+4. Append to the matching section in the appropriate learnings file. Create the
+   file and parent directories if they don't exist.
+5. If the file is new, create it with the appropriate header and sections.
+6. Confirm: "Added [type] to [tier]: [learning]"
 
 ---
 
@@ -261,8 +302,20 @@ Before completing, reflect on this session:
 If yes, log an operational learning for future sessions. Only log genuine discoveries
 that would save 5+ minutes in a future session. Don't log obvious things or transient errors.
 
-The learnings file is at `~/.resskills/projects/{slug}/learnings.md`. Create it if it
-doesn't exist. Append under the appropriate section:
+There are two learnings files:
+
+1. **Project learnings** (committed): `learnings.md` in the project root.
+   Write here when the learning is about the project itself -- conventions,
+   pitfalls, techniques, insights that any collaborator would benefit from.
+
+2. **User learnings** (not committed): `~/.resskills/projects/{slug}/learnings.local.md`.
+   Write here when the learning is about your local environment, personal
+   preferences, or machine-specific quirks.
+
+If unsure, default to project learnings. Most discoveries are project-level.
+
+Append under the appropriate section in the chosen file. Create the file if it
+doesn't exist.
 
 ```markdown
 ## Techniques

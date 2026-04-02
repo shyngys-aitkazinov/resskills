@@ -15,5 +15,8 @@ Thumbs.db
 # Reference repos (not part of the skills pack)
 temp-refs/
 
+# Local learnings (not committed)
+learnings.local.md
+
 # Claude
 .claude/

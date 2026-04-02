@@ -19,9 +19,12 @@ fi
 [ -f research-state.yaml ] && echo "STATE: research-state.yaml"
 [ -f findings.md ] && echo "FINDINGS: findings.md ($(wc -l < findings.md 2>/dev/null | tr -d ' ') lines)"
 
-# Learnings (per-project, if any)
-_LEARN="${HOME}/.resskills/projects/${_SLUG}/learnings.md"
-[ -f "$_LEARN" ] && echo "LEARNINGS: $_LEARN ($(wc -l < "$_LEARN" 2>/dev/null | tr -d ' ') lines)"
+# Project learnings (committed, shared)
+[ -f learnings.md ] && echo "LEARNINGS (project): learnings.md ($(wc -l < learnings.md 2>/dev/null | tr -d ' ') lines)"
+
+# User learnings (local, personal)
+_LEARN_LOCAL="${HOME}/.resskills/projects/${_SLUG}/learnings.local.md"
+[ -f "$_LEARN_LOCAL" ] && echo "LEARNINGS (user): $_LEARN_LOCAL ($(wc -l < "$_LEARN_LOCAL" 2>/dev/null | tr -d ' ') lines)"
 ```
 
 Use the context above to understand the project state. If a config file exists, use its

@@ -41,9 +41,12 @@ fi
 [ -f research-state.yaml ] && echo "STATE: research-state.yaml"
 [ -f findings.md ] && echo "FINDINGS: findings.md ($(wc -l < findings.md 2>/dev/null | tr -d ' ') lines)"
 
-# Learnings (per-project, if any)
-_LEARN="${HOME}/.resskills/projects/${_SLUG}/learnings.md"
-[ -f "$_LEARN" ] && echo "LEARNINGS: $_LEARN ($(wc -l < "$_LEARN" 2>/dev/null | tr -d ' ') lines)"
+# Project learnings (committed, shared)
+[ -f learnings.md ] && echo "LEARNINGS (project): learnings.md ($(wc -l < learnings.md 2>/dev/null | tr -d ' ') lines)"
+
+# User learnings (local, personal)
+_LEARN_LOCAL="${HOME}/.resskills/projects/${_SLUG}/learnings.local.md"
+[ -f "$_LEARN_LOCAL" ] && echo "LEARNINGS (user): $_LEARN_LOCAL ($(wc -l < "$_LEARN_LOCAL" 2>/dev/null | tr -d ' ') lines)"
 ```
 
 Use the context above to understand the project state. If a config file exists, use its
@@ -439,8 +442,20 @@ Before completing, reflect on this session:
 If yes, log an operational learning for future sessions. Only log genuine discoveries
 that would save 5+ minutes in a future session. Don't log obvious things or transient errors.
 
-The learnings file is at `~/.resskills/projects/{slug}/learnings.md`. Create it if it
-doesn't exist. Append under the appropriate section:
+There are two learnings files:
+
+1. **Project learnings** (committed): `learnings.md` in the project root.
+   Write here when the learning is about the project itself -- conventions,
+   pitfalls, techniques, insights that any collaborator would benefit from.
+
+2. **User learnings** (not committed): `~/.resskills/projects/{slug}/learnings.local.md`.
+   Write here when the learning is about your local environment, personal
+   preferences, or machine-specific quirks.
+
+If unsure, default to project learnings. Most discoveries are project-level.
+
+Append under the appropriate section in the chosen file. Create the file if it
+doesn't exist.
 
 ```markdown
 ## Techniques
